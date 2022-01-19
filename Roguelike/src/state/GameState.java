@@ -46,7 +46,7 @@ public class GameState extends State{
 		//GameManager.cameraOffset = new Vector(new Point(0, 0), playerPos);	//vector from player location to center of screen
 		
 		//System.out.println(GameManager.cameraOffset.x + " " + GameManager.cameraOffset.y);
-		System.out.println(GameManager.player.pos.x + " " + GameManager.player.pos.y);
+		//System.out.println(GameManager.player.pos.x + " " + GameManager.player.pos.y);
 	}
 
 	@Override

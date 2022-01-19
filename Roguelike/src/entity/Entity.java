@@ -194,7 +194,6 @@ public abstract class Entity {
 			}
 			
 			if(collision) {
-				System.out.println("collsiion");
 				this.envCollision = true;
 				this.pos.x += (collisionX - lowerLeft.x);
 				this.vel.x = 0;
@@ -238,7 +237,6 @@ public abstract class Entity {
 			}
 			
 			if(collision) {
-				System.out.println("collsiion");
 				this.envCollision = true;
 				this.pos.x += (collisionX - lowerRight.x);
 				this.vel.x = 0;
@@ -282,7 +280,6 @@ public abstract class Entity {
 			}
 			
 			if(collision) {
-				System.out.println("collsiion 3");
 				this.envCollision = true;
 				this.pos.y += (collisionY - lowerRight.y);
 				this.vel.y = 0;
@@ -325,7 +322,6 @@ public abstract class Entity {
 			}
 			
 			if(collision) {
-				System.out.println("collsiion 4");
 				this.envCollision = true;
 				this.pos.y += (collisionY - upperRight.y);
 				this.vel.y = 0;
@@ -334,8 +330,6 @@ public abstract class Entity {
 				this.pos.y += this.vel.y;
 			}
 		}
-		
-		System.out.println(this.envCollision);
 		
 	}
 }
