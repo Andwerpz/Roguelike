@@ -9,19 +9,23 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.util.Stack;
 
+import player.Player;
 import util.Vector;
 
 public class GameManager {
-
-public Stack<State> states;
 	
 	private Point mouse;
+
+	public Stack<State> states;
+	
 	public static Vector cameraOffset = new Vector(0, 0);
+	public static Player player = new Player(new Vector(0, 0));
+	public static int tileSize = 48;
 	
 	public GameManager() {
 		
 		states = new Stack<State>();
-		states.push(new MenuState(this));
+		states.push(new GameState(this));
 		
 	}
 	

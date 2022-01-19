@@ -19,8 +19,8 @@ import state.GameManager;
 
 public class MainPanel extends JPanel implements Runnable, KeyListener, MouseListener, MouseWheelListener{
 	
-	public final static int WIDTH = 800;
-	public final static int HEIGHT = 600;
+	public final static int WIDTH = 1920;
+	public final static int HEIGHT = 1080;
 	
 	private boolean isRunning = true;
 	private Thread thread;

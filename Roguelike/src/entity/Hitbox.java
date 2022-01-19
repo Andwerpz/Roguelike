@@ -65,12 +65,12 @@ public class Hitbox {
 			Point a = corners[i]; 
 			Point b = corners[(i + 1) % 4];
 			//System.out.println(a.x + " " + a.y);
-			g.setColor(Color.black);
+			g.setColor(Color.GREEN);
 			g.drawLine(
-					(int) ((a.x + pos.x + offset.x) * Map.TILE_SIZE - GameManager.cameraOffset.x + MainPanel.WIDTH / 2), 
-					(int) ((a.y + pos.y + offset.y) * Map.TILE_SIZE - GameManager.cameraOffset.y + MainPanel.HEIGHT / 2), 
-					(int) ((b.x + pos.x + offset.x) * Map.TILE_SIZE - GameManager.cameraOffset.x + MainPanel.WIDTH / 2), 
-					(int) ((b.y + pos.y + offset.y) * Map.TILE_SIZE - GameManager.cameraOffset.y + MainPanel.HEIGHT / 2));
+					(int) ((a.x + pos.x + offset.x) * GameManager.tileSize - GameManager.cameraOffset.x), 
+					(int) ((a.y + pos.y + offset.y) * GameManager.tileSize - GameManager.cameraOffset.y), 
+					(int) ((b.x + pos.x + offset.x) * GameManager.tileSize - GameManager.cameraOffset.x), 
+					(int) ((b.y + pos.y + offset.y) * GameManager.tileSize - GameManager.cameraOffset.y));
 		}
 
 	}

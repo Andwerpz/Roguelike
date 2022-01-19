@@ -18,13 +18,14 @@ import java.util.StringTokenizer;
 import input.Button;
 import input.InputManager;
 import main.MainPanel;
+import state.GameManager;
 import util.GraphicsTools;
 import util.Vector;
 
 public class Map {
 	//stores all relevant map info
 	
-	public static final int TILE_SIZE = 32;
+	public static final int TILE_SIZE = 32;	//used for drawing the map texture
 	
 	//0 : air, 1 : floor, 2 : entrance / exit
 	public int[][] map;
@@ -141,7 +142,7 @@ public class Map {
 
 	public void tick(Point mouse2) {}
 
-	public void draw(Graphics g, int xOffset, int yOffset) {
+	public void draw(Graphics g) {
 		
 		//drawing tiles
 		/*
@@ -171,8 +172,8 @@ public class Map {
 		g.setColor(Color.BLACK);
 		g.fillRect(0, 0, MainPanel.WIDTH, MainPanel.HEIGHT);
 		
-		g.drawImage(mapTexture, xOffset, yOffset, Map.TILE_SIZE * mapSize, Map.TILE_SIZE * mapSize, null);
-		g.drawImage(wallTexture, xOffset, yOffset, Map.TILE_SIZE * mapSize, Map.TILE_SIZE * mapSize, null);
+		g.drawImage(mapTexture, (int) -GameManager.cameraOffset.x, (int) -GameManager.cameraOffset.y, this.mapSize * GameManager.tileSize, this.mapSize * GameManager.tileSize, null);
+		g.drawImage(wallTexture, (int) -GameManager.cameraOffset.x, (int) -GameManager.cameraOffset.y, this.mapSize * GameManager.tileSize, this.mapSize * GameManager.tileSize, null);
 	}
 	
 	int minConnectorLength = 5;
@@ -244,7 +245,7 @@ public class Map {
 		}
 		
 		Graphics gMap = this.mapTexture.getGraphics();
-		gMap.drawImage(startTile.texture, startX * Map.TILE_SIZE, startY * Map.TILE_SIZE, null);
+		gMap.drawImage(startTile.texture, startX * Map.TILE_SIZE, startY * Map.TILE_SIZE, startTile.width * Map.TILE_SIZE, startTile.height * Map.TILE_SIZE, null);
 		
 		int roomCounter = 0;
 		
@@ -407,7 +408,7 @@ public class Map {
 					
 					//draw tile texture onto map
 					Graphics gMap = this.mapTexture.getGraphics();
-					gMap.drawImage(t.texture, minX * Map.TILE_SIZE, minY * Map.TILE_SIZE, null);
+					gMap.drawImage(t.texture, minX * Map.TILE_SIZE, minY * Map.TILE_SIZE, t.width * Map.TILE_SIZE, t.height * Map.TILE_SIZE, null);
 					
 					//set current exit
 					map[oy][ox] = 2;
@@ -543,7 +544,7 @@ public class Map {
 		}
 		
 		//change back map
-		for(int i = this.mapSize - 1; i > 0; i--) {
+		for(int i = 0; i < this.mapSize; i++) {
 			for(int j = 0; j < this.mapSize; j++) {
 				if(i + 1 == this.mapSize) {
 					if(this.map[i][j] == 1) {

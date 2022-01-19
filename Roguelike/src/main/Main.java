@@ -11,6 +11,10 @@ public class Main {
 
 	public static void main(String[] args) {
 		
+		System.setProperty("sun.java2d.opengl", "true");
+		System.setProperty("awt.useSystemAAFontSettings","on");
+		System.setProperty("swing.aatext", "true");
+		
 		GraphicsEnvironment graphics =
 		GraphicsEnvironment.getLocalGraphicsEnvironment();
 		GraphicsDevice device = graphics.getDefaultScreenDevice();

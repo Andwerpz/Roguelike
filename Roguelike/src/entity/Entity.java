@@ -25,22 +25,12 @@ public abstract class Entity {
 	public static double cushion = 0.001;	//to facilitate smooth movement
 	
 	public double acceleration = 0.1;	//units per frame. For now, units are map grid cells
-	public double jumpVel = 0.35;	//amount of impulse when the player jumps
-	
-	public boolean gravity = true;	//is this entity affected by gravity?
-	public double gravityAcceleration = 0.01;		//gravitational acceleration
 	
 	public boolean onGround = false;
 	
-	public double maxHorizontalSpeed = 0.25;	//maximum tiles per frame
-	public double maxVerticalSpeed = 0.35;	//it's what it says
+	public double maxSpeed = 0.25;	//maximum tiles per frame
 	
-	public double groundFriction = 0.25;	//how much horizontal speed is leaked between frames.
-	public boolean frictionOnGround = true;	//does friction affect this entity while on the ground
-	
-	public double airFriction = 0.1;	//how much horizontal speed is leaked between frames in the air
-	public boolean frictionInAir = true;	//does friction affect you while in the air?
-	public boolean verticalFriction = false;	//in the air, does friction affect your vertical movement?
+	public double friction = 0.25;	//how much speed is leaked between frames.
 	
 	public boolean envCollision = false;	//did this entity collide with the environment?	used for projectiles
 	
@@ -60,18 +50,18 @@ public abstract class Entity {
 	//draws the sprite so that it is stretched over the environment hitbox
 	public void drawSprite(BufferedImage sprite, Graphics g) {
 		g.drawImage(sprite, 
-				(int) ((this.pos.x - this.width / 2) * Map.TILE_SIZE - GameManager.cameraOffset.x + MainPanel.WIDTH / 2), 
-				(int) ((this.pos.y - this.height / 2) * Map.TILE_SIZE - GameManager.cameraOffset.y + MainPanel.HEIGHT / 2), 
-				(int) (this.width * Map.TILE_SIZE), 
-				(int) (this.height * Map.TILE_SIZE), null);
+				(int) ((this.pos.x - this.width / 2) * GameManager.tileSize - GameManager.cameraOffset.x + MainPanel.WIDTH / 2), 
+				(int) ((this.pos.y - this.height / 2) * GameManager.tileSize - GameManager.cameraOffset.y + MainPanel.HEIGHT / 2), 
+				(int) (this.width * GameManager.tileSize), 
+				(int) (this.height * GameManager.tileSize), null);
 	}
 	
 	public void drawSprite(BufferedImage sprite, Graphics g, double width, double height) {
 		g.drawImage(sprite, 
-				(int) ((this.pos.x - width / 2) * Map.TILE_SIZE - GameManager.cameraOffset.x + MainPanel.WIDTH / 2), 
-				(int) ((this.pos.y - height / 2) * Map.TILE_SIZE - GameManager.cameraOffset.y + MainPanel.HEIGHT / 2), 
-				(int) (width * Map.TILE_SIZE), 
-				(int) (height * Map.TILE_SIZE), null);
+				(int) ((this.pos.x - width / 2) * GameManager.tileSize - GameManager.cameraOffset.x + MainPanel.WIDTH / 2), 
+				(int) ((this.pos.y - height / 2) * GameManager.tileSize - GameManager.cameraOffset.y + MainPanel.HEIGHT / 2), 
+				(int) (width * GameManager.tileSize), 
+				(int) (height * GameManager.tileSize), null);
 	}
 	
 	//rotating clockwise?
@@ -151,7 +141,7 @@ public abstract class Entity {
 			int tileX = (int) (p.x + this.pos.x);
 			int tileY = (int) (p.y + this.pos.y + cushion * 2);
 			//System.out.println(tileX + " " + tileY + " " + map.map[tileY][tileX]);
-			if(map.map[tileY][tileX] != 0) {
+			if(map.map[tileY][tileX] == 0) {
 				this.onGround = true;
 				this.envCollision = true;
 				this.vel.y = 0;
@@ -163,26 +153,9 @@ public abstract class Entity {
 		
 		//System.out.println((0.5d + this.pos.y) + " " +  this.onGround);
 		
-		//movement: friction, gravity
-		if(!this.onGround && this.gravity) {
-			this.vel.y += this.gravityAcceleration;
-		}
-		
-		if(this.onGround && this.frictionOnGround){
-			this.vel.x *= (1d - this.groundFriction);
-		}
-		if(!this.onGround && this.frictionInAir) {
-			this.vel.x *= (1d - this.airFriction);
-			if(this.verticalFriction) {
-				this.vel.y *= (1d - this.airFriction);
-			}
-		}
-		
-		
-		this.vel.x = Math.min(this.vel.x, this.maxHorizontalSpeed);
-		this.vel.x = Math.max(this.vel.x, -this.maxHorizontalSpeed);
-		this.vel.y = Math.min(this.vel.y, this.maxVerticalSpeed);
-		this.vel.y = Math.max(this.vel.y, -this.maxVerticalSpeed);
+		//friction
+		this.vel.multiply(1d - this.friction);
+		//this.vel.setMagnitude(Math.min(maxSpeed, this.vel.getMagnitude()));
 		
 		
 		//movement collision checks
@@ -205,7 +178,7 @@ public abstract class Entity {
 				int tileX = (int) (nextX - cushion);
 				int tileY = (int) (i);
 				
-				if(map.map[tileY][tileX] != 0) {
+				if(map.map[tileY][tileX] == 0) {
 					collision = true;
 					collisionX = (double) tileX + cushion + 1d;
 					break;
@@ -215,13 +188,13 @@ public abstract class Entity {
 			int tileX = (int) (nextX - cushion);
 			int tileY = (int) (lowerLeft.y);
 			
-			if(map.map[tileY][tileX] != 0) {
+			if(map.map[tileY][tileX] == 0) {
 				collision = true;
 				collisionX = (double) tileX + cushion + 1d;
 			}
 			
 			if(collision) {
-				//System.out.println("collsiion");
+				System.out.println("collsiion");
 				this.envCollision = true;
 				this.pos.x += (collisionX - lowerLeft.x);
 				this.vel.x = 0;
@@ -249,7 +222,7 @@ public abstract class Entity {
 				int tileX = (int) (nextX - cushion);
 				int tileY = (int) (i);
 				
-				if(map.map[tileY][tileX] != 0) {
+				if(map.map[tileY][tileX] == 0) {
 					collision = true;
 					collisionX = (double) tileX - cushion;
 					break;
@@ -259,12 +232,13 @@ public abstract class Entity {
 			int tileX = (int) (nextX - cushion);
 			int tileY = (int) (lowerRight.y);
 			
-			if(map.map[tileY][tileX] != 0) {
+			if(map.map[tileY][tileX] == 0) {
 				collision = true;
 				collisionX = (double) tileX - cushion;
 			}
 			
 			if(collision) {
+				System.out.println("collsiion");
 				this.envCollision = true;
 				this.pos.x += (collisionX - lowerRight.x);
 				this.vel.x = 0;
@@ -292,9 +266,9 @@ public abstract class Entity {
 				int tileX = (int) (i);
 				int tileY = (int) (nextY - cushion);
 				
-				if(map.map[tileY][tileX] != 0) {
+				if(map.map[tileY][tileX] == 0) {
 					collision = true;
-					collisionY = (double) tileY + cushion;
+					collisionY = (double) tileY - cushion * 10;
 					break;
 				}
 			}
@@ -302,12 +276,13 @@ public abstract class Entity {
 			int tileX = (int) (lowerRight.x);
 			int tileY = (int) (nextY - cushion);
 			
-			if(map.map[tileY][tileX] != 0) {
+			if(map.map[tileY][tileX] == 0) {
 				collision = true;
-				collisionY = (double) tileY + cushion;
+				collisionY = (double) tileY - cushion * 10;
 			}
 			
 			if(collision) {
+				System.out.println("collsiion 3");
 				this.envCollision = true;
 				this.pos.y += (collisionY - lowerRight.y);
 				this.vel.y = 0;
@@ -334,7 +309,7 @@ public abstract class Entity {
 				int tileX = (int) (i);
 				int tileY = (int) (nextY - cushion);
 				
-				if(map.map[tileY][tileX] != 0) {
+				if(map.map[tileY][tileX] == 0) {
 					collision = true;
 					collisionY = (double) tileY + cushion + 1d;;
 					break;
@@ -344,12 +319,13 @@ public abstract class Entity {
 			int tileX = (int) (upperRight.x);
 			int tileY = (int) (nextY - cushion);
 			
-			if(map.map[tileY][tileX] != 0) {
+			if(map.map[tileY][tileX] == 0) {
 				collision = true;
 				collisionY = (double) tileY + cushion + 1d;
 			}
 			
 			if(collision) {
+				System.out.println("collsiion 4");
 				this.envCollision = true;
 				this.pos.y += (collisionY - upperRight.y);
 				this.vel.y = 0;
@@ -358,6 +334,8 @@ public abstract class Entity {
 				this.pos.y += this.vel.y;
 			}
 		}
+		
+		System.out.println(this.envCollision);
 		
 	}
 }
