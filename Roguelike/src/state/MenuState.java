@@ -51,7 +51,7 @@ public class MenuState extends State{
 		
 		im.draw(g);
 		
-		map.draw(g, 0, 0);
+		//map.draw(g, 0, 0);
 		
 	}
 
