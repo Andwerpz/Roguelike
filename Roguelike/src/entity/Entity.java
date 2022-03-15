@@ -47,19 +47,28 @@ public abstract class Entity {
 		return this.envHitbox.collision(this.pos, e.envHitbox, e.pos);
 	}
 	
-	//draws the sprite so that it is stretched over the environment hitbox
+	public static Point convertPointToScreen(Point real) {
+		Point ans = new Point(real);
+		ans.x = (ans.x * GameManager.tileSize - GameManager.cameraOffset.x);
+		ans.y = (ans.y * GameManager.tileSize - GameManager.cameraOffset.y);
+		return ans;
+	}
+	
+	//draws the sprite so that the bottom of the sprite is aligned to the bottom of the env hitbox
 	public void drawSprite(BufferedImage sprite, Graphics g) {
+		double width = (double) sprite.getWidth() / (double) (GameManager.tileSize / 3);
+		double height = (double) sprite.getHeight() / (double) (GameManager.tileSize / 3);
 		g.drawImage(sprite, 
-				(int) ((this.pos.x - this.width / 2) * GameManager.tileSize - GameManager.cameraOffset.x + MainPanel.WIDTH / 2), 
-				(int) ((this.pos.y - this.height / 2) * GameManager.tileSize - GameManager.cameraOffset.y + MainPanel.HEIGHT / 2), 
-				(int) (this.width * GameManager.tileSize), 
-				(int) (this.height * GameManager.tileSize), null);
+				(int) ((this.pos.x - width / 2) * GameManager.tileSize - GameManager.cameraOffset.x), 
+				(int) ((this.pos.y - height + this.height / 2) * GameManager.tileSize - GameManager.cameraOffset.y), 
+				(int) (width * GameManager.tileSize), 
+				(int) (height * GameManager.tileSize), null);
 	}
 	
 	public void drawSprite(BufferedImage sprite, Graphics g, double width, double height) {
 		g.drawImage(sprite, 
-				(int) ((this.pos.x - width / 2) * GameManager.tileSize - GameManager.cameraOffset.x + MainPanel.WIDTH / 2), 
-				(int) ((this.pos.y - height / 2) * GameManager.tileSize - GameManager.cameraOffset.y + MainPanel.HEIGHT / 2), 
+				(int) ((this.pos.x - width / 2) * GameManager.tileSize - GameManager.cameraOffset.x), 
+				(int) ((this.pos.y - height / 2) * GameManager.tileSize - GameManager.cameraOffset.y), 
 				(int) (width * GameManager.tileSize), 
 				(int) (height * GameManager.tileSize), null);
 	}

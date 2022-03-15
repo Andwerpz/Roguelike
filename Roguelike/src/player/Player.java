@@ -26,9 +26,13 @@ public class Player extends Entity{
 	public static final int BASE_CRIT_MULTIPlIER = 2;
 	public static final int BASE_IMMUNE_FRAMES = 30;
 	
-	public static ArrayList<BufferedImage> animationIdle;
-	public static int idleFrameInterval = 1;
-	public int idleFrame = 0;
+	public static ArrayList<BufferedImage> idleAnimation;
+	public static ArrayList<BufferedImage> runAnimation;
+	
+	public ArrayList<BufferedImage> curAnimation;
+	public int curAnimationFrame;
+	public int animationInterval = 10;	//num ticks between each frame
+	public boolean interruptible = false;
 	
 	public int health;
 	public int maxHealth = 100; 	//after buffs
@@ -83,6 +87,9 @@ public class Player extends Entity{
 		
 		this.friction = 0.9;
 		this.acceleration = 1.2;
+		
+		this.curAnimation = Player.idleAnimation;
+		this.curAnimationFrame = 0;
 	}
 	
 	//resets the players stats to their base levels.
@@ -91,7 +98,8 @@ public class Player extends Entity{
 	}
 	
 	public static void loadTextures() {
-		Player.animationIdle = GraphicsTools.loadAnimation("/Textures/Player/astolfo.png", 474, 520);
+		Player.idleAnimation = GraphicsTools.loadAnimation("/knight_idle.png", 19, 25);
+		Player.runAnimation = GraphicsTools.loadAnimation("/knight_run.png", 19, 25);
 	}
 	
 	//takes in hitbox and position vector and checks whether the hitbox collides with the player
@@ -156,6 +164,17 @@ public class Player extends Entity{
 		}
 		this.vel.addVector(accel);
 		this.move(map);
+		
+		this.curAnimationFrame ++;
+		if(this.curAnimationFrame == this.curAnimation.size() * this.animationInterval) {
+			this.curAnimationFrame = 0;
+		}
+	}
+	
+	public void handleAnimation() {
+		
+		
+		
 	}
 	
 	/*
@@ -226,7 +245,7 @@ public class Player extends Entity{
 	public void draw(Graphics g) {
 		
 		this.drawHitboxes(g);
-		//this.drawSprite(Player.animationIdle.get(0), g);
+		this.drawSprite(this.curAnimation.get(this.curAnimationFrame / this.animationInterval), g);
 		
 		/*
 		
@@ -279,6 +298,7 @@ public class Player extends Entity{
 	}
 	
 	public void keyPressed(int k) {
+		
 		if(k == KeyEvent.VK_A) {
 			left = true;
 		}

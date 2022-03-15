@@ -20,9 +20,12 @@ public class GameManager {
 	
 	public static Vector cameraOffset = new Vector(0, 0);
 	public static Player player = new Player(new Vector(0, 0));
-	public static int tileSize = 48;
+	public static final int tileSize = 48;	
+	public static final int pixelSize = 3;	//not being used rn
 	
 	public GameManager() {
+		
+		Player.loadTextures();
 		
 		states = new Stack<State>();
 		states.push(new GameState(this));

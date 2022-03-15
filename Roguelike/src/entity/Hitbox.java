@@ -62,15 +62,23 @@ public class Hitbox {
 	
 	public void draw(Graphics g, Vector pos) {
 		for(int i = 0; i < 4; i++) {
-			Point a = corners[i]; 
-			Point b = corners[(i + 1) % 4];
+			Point a = new Point(corners[i]); 
+			Point b = new Point(corners[(i + 1) % 4]);
+			a.addVector(pos);
+			b.addVector(pos);
+			a.addVector(offset);
+			b.addVector(offset);
+			Point aScreen = Entity.convertPointToScreen(a);
+			Point bScreen = Entity.convertPointToScreen(b);
 			//System.out.println(a.x + " " + a.y);
 			g.setColor(Color.GREEN);
-			g.drawLine(
-					(int) ((a.x + pos.x + offset.x) * GameManager.tileSize - GameManager.cameraOffset.x), 
-					(int) ((a.y + pos.y + offset.y) * GameManager.tileSize - GameManager.cameraOffset.y), 
-					(int) ((b.x + pos.x + offset.x) * GameManager.tileSize - GameManager.cameraOffset.x), 
-					(int) ((b.y + pos.y + offset.y) * GameManager.tileSize - GameManager.cameraOffset.y));
+			g.drawLine((int) aScreen.x, (int) aScreen.y, (int) bScreen.x, (int) bScreen.y);
+			//System.out.println("DRAW");
+//			g.drawLine(
+//					(int) ((a.x + pos.x + offset.x) * GameManager.tileSize - GameManager.cameraOffset.x), 
+//					(int) ((a.y + pos.y + offset.y) * GameManager.tileSize - GameManager.cameraOffset.y), 
+//					(int) ((b.x + pos.x + offset.x) * GameManager.tileSize - GameManager.cameraOffset.x), 
+//					(int) ((b.y + pos.y + offset.y) * GameManager.tileSize - GameManager.cameraOffset.y));
 		}
 
 	}
