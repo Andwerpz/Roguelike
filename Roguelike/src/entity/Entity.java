@@ -2,6 +2,7 @@ package entity;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
@@ -54,11 +55,44 @@ public abstract class Entity {
 		return ans;
 	}
 	
+	public static Point convertPointToReal(Point screen) {
+		Point ans = new Point(screen);
+		ans.x = (ans.x + GameManager.cameraOffset.x) / GameManager.tileSize; 
+		ans.y = (ans.y + GameManager.cameraOffset.y) / GameManager.tileSize; 
+		return ans;
+	}
+	
+	//draws shadow centered around bottom middle of hitbox
+	public void drawShadow(Graphics g) {
+		Graphics2D g2 = (Graphics2D) g;
+		g2.setComposite(GraphicsTools.makeComposite(0.25));
+		g.setColor(Color.BLACK);
+	
+		Point screen = new Point(this.pos);
+		screen.addVector(new Vector(-width / 2, height / 4));
+		screen = Entity.convertPointToScreen(screen);
+		
+		g.fillOval((int) screen.x, (int) screen.y, (int) (this.width * (double) GameManager.tileSize), (int) (this.height / 2 * (double) GameManager.tileSize));
+		
+		g2.setComposite(GraphicsTools.makeComposite(1));
+	}
+	
 	//draws the sprite so that the bottom of the sprite is aligned to the bottom of the env hitbox
 	public void drawSprite(BufferedImage sprite, Graphics g) {
-		double width = (double) sprite.getWidth() / (double) (GameManager.tileSize / 3);
-		double height = (double) sprite.getHeight() / (double) (GameManager.tileSize / 3);
+		double width = (double) sprite.getWidth() / (double) (GameManager.tileSize / GameManager.pixelSize);
+		double height = (double) sprite.getHeight() / (double) (GameManager.tileSize / GameManager.pixelSize);
 		g.drawImage(sprite, 
+				(int) ((this.pos.x - width / 2) * GameManager.tileSize - GameManager.cameraOffset.x), 
+				(int) ((this.pos.y - height + this.height / 2) * GameManager.tileSize - GameManager.cameraOffset.y), 
+				(int) (width * GameManager.tileSize), 
+				(int) (height * GameManager.tileSize), null);
+	}
+	
+	public void drawHorizontalMirroredSprite(BufferedImage sprite, Graphics g) {
+		BufferedImage mirroredSprite = GraphicsTools.flipImageHorizontal(sprite);
+		double width = (double) sprite.getWidth() / (double) (GameManager.tileSize / GameManager.pixelSize);
+		double height = (double) sprite.getHeight() / (double) (GameManager.tileSize / GameManager.pixelSize);
+		g.drawImage(mirroredSprite, 
 				(int) ((this.pos.x - width / 2) * GameManager.tileSize - GameManager.cameraOffset.x), 
 				(int) ((this.pos.y - height + this.height / 2) * GameManager.tileSize - GameManager.cameraOffset.y), 
 				(int) (width * GameManager.tileSize), 
@@ -76,14 +110,7 @@ public abstract class Entity {
 	//rotating clockwise?
 	public void drawRotatedSprite(BufferedImage sprite, Graphics g, double rads) {
 		BufferedImage rotatedImg = GraphicsTools.rotateImageByDegrees(sprite, Math.toDegrees((rads)));
-		
-		double sin = Math.abs(Math.sin(rads)), cos = Math.abs(Math.cos(rads));
-		double w = this.width;
-	    double h = this.height;
-	    double newWidth = w * cos + h * sin;
-	    double newHeight = h * cos + w * sin;
-
-		this.drawSprite(rotatedImg, g, newWidth, newHeight);
+		this.drawSprite(rotatedImg, g);
 	}
 	
 	//rotating clockwise?
@@ -99,11 +126,17 @@ public abstract class Entity {
 		this.drawSprite(rotatedImg, g, newWidth, newHeight);
 	}
 	
+	//draws sprite so that it faces the direction of the point at vector
 	public void drawPointAtSprite(BufferedImage sprite, Graphics g, Vector pointAt) {
 		
 		double rads = Math.atan2(pointAt.y, pointAt.x);
 		
 		this.drawRotatedSprite(sprite, g, rads);
+	}
+	
+	//draws sprite so that it points at a real space point
+	public void drawPointAtSprite(BufferedImage sprite, Graphics g, Point realPoint) {
+		this.drawPointAtSprite(sprite, g, new Vector(realPoint.x - this.pos.x, realPoint.y - this.pos.y));
 	}
 	
 	public void drawPointAtSprite(BufferedImage sprite, Graphics g, Vector pointAt, double width, double height) {

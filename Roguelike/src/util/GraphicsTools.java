@@ -23,54 +23,84 @@ public class GraphicsTools {
 
 	public static AlphaComposite makeComposite(double alpha) {
 		int type = AlphaComposite.SRC_OVER;
-		return(AlphaComposite.getInstance(type, (float) alpha));
+		return (AlphaComposite.getInstance(type, (float) alpha));
 	}
-	
+
 	public static void drawCenteredString(int x, int y, Graphics g, Font f, String s, Color c) {
 		int width = GraphicsTools.calculateTextWidth(s, f);
 		g.setFont(f);
 		g.setColor(c);
 		g.drawString(s, x - width / 2, y - f.getSize() / 2);
 	}
-	
+
 	public static int calculateTextWidth(String text, Font font) {
 		BufferedImage img = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
 		FontMetrics fm = img.getGraphics().getFontMetrics(font);
 		return fm.stringWidth(text);
 	}
-	
+
 	public static void enableTextAntialiasing(Graphics g) {
 		Graphics2D g2 = (Graphics2D) g;
 		g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 	}
-	
-	//ty MadProgrammer
+
+	// ty MadProgrammer
 	public static BufferedImage rotateImageByDegrees(BufferedImage img, double angle) {
-        double rads = Math.toRadians(angle);
-        double sin = Math.abs(Math.sin(rads)), cos = Math.abs(Math.cos(rads));
-        int w = img.getWidth();
-        int h = img.getHeight();
-        int newWidth = (int) Math.floor(w * cos + h * sin);
-        int newHeight = (int) Math.floor(h * cos + w * sin);
+		double rads = Math.toRadians(angle);
+		double sin = Math.abs(Math.sin(rads)), cos = Math.abs(Math.cos(rads));
+		int w = img.getWidth();
+		int h = img.getHeight();
+		int newWidth = (int) Math.floor(w * cos + h * sin);
+		int newHeight = (int) Math.floor(h * cos + w * sin);
 
-        BufferedImage rotated = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g2d = rotated.createGraphics();
-        AffineTransform at = new AffineTransform();
-        at.translate((newWidth - w) / 2, (newHeight - h) / 2);
+		BufferedImage rotated = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_ARGB);
+		Graphics2D g2d = rotated.createGraphics();
+		AffineTransform at = new AffineTransform();
+		at.translate((newWidth - w) / 2, (newHeight - h) / 2);
 
-        int x = w / 2;
-        int y = h / 2;
+		int x = w / 2;
+		int y = h / 2;
 
-        at.rotate(rads, x, y);
-        g2d.setTransform(at);
-        g2d.drawImage(img, null, 0, 0);
-        g2d.dispose();
+		at.rotate(rads, x, y);
+		g2d.setTransform(at);
+		g2d.drawImage(img, null, 0, 0);
+		g2d.dispose();
 
-        return rotated;
-    }
-	
-	//combines two images
-	//useful when combining images that are usually drawn together
+		return rotated;
+	}
+
+	// flips image vertically
+	public static BufferedImage flipImageVertical(BufferedImage image) {
+		AffineTransform at = new AffineTransform();
+		at.concatenate(AffineTransform.getScaleInstance(1, -1));
+		at.concatenate(AffineTransform.getTranslateInstance(0, -image.getHeight()));
+		// return createTransformed(image, at);
+
+		BufferedImage newImage = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_ARGB);
+		Graphics2D g = newImage.createGraphics();
+		g.transform(at);
+		g.drawImage(image, 0, 0, null);
+		g.dispose();
+		return newImage;
+	}
+
+	// flips image horizontally
+	public static BufferedImage flipImageHorizontal(BufferedImage image) {
+		AffineTransform at = new AffineTransform();
+		at.concatenate(AffineTransform.getScaleInstance(-1, 1));
+		at.concatenate(AffineTransform.getTranslateInstance(-image.getWidth(), 0));
+		// return createTransformed(image, at);
+
+		BufferedImage newImage = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_ARGB);
+		Graphics2D g = newImage.createGraphics();
+		g.transform(at);
+		g.drawImage(image, 0, 0, null);
+		g.dispose();
+		return newImage;
+	}
+
+	// combines two images
+	// useful when combining images that are usually drawn together
 	public static BufferedImage combineImages(BufferedImage a, BufferedImage b) {
 
 		// create the new image, canvas size is the max. of both image sizes
@@ -87,74 +117,74 @@ public class GraphicsTools {
 
 		return combined;
 	}
-	
-	//make a copy of an image
-	public static BufferedImage copyImage(BufferedImage source){
-	    BufferedImage b = new BufferedImage(source.getWidth(), source.getHeight(), source.getType());
-	    Graphics g = b.getGraphics();
-	    g.drawImage(source, 0, 0, null);
-	    g.dispose();
-	    return b;
+
+	// make a copy of an image
+	public static BufferedImage copyImage(BufferedImage source) {
+		BufferedImage b = new BufferedImage(source.getWidth(), source.getHeight(), source.getType());
+		Graphics g = b.getGraphics();
+		g.drawImage(source, 0, 0, null);
+		g.dispose();
+		return b;
 	}
-	
-	//darkening an image according to a float value
+
+	// darkening an image according to a float value
 	public static BufferedImage darkenImage(double d, BufferedImage b) {
 		BufferedImage output = new BufferedImage(b.getWidth(), b.getHeight(), BufferedImage.TYPE_INT_ARGB);
 		Graphics2D g2d = (Graphics2D) output.getGraphics();
-		
+
 		g2d.drawImage(b, 0, 0, null);
-		
+
 		g2d.setComposite(makeComposite(1d - d));
 		g2d.setColor(Color.black);
 		g2d.fillRect(0, 0, b.getWidth(), b.getHeight());
-		
-	    return output;
+
+		return output;
 	}
-	
-	//loads image from filepath
-	//filepath is relative to this class
+
+	// loads image from filepath
+	// filepath is relative to this class
 	public static BufferedImage loadImage(String filepath) {
 		BufferedImage img = null;
 		InputStream is;
-		
+
 		System.out.print("LOADING IMAGE: " + filepath);
-		
+
 		try {
-			
+
 			is = GraphicsTools.class.getResourceAsStream(filepath);
 			img = ImageIO.read(is);
-			
+
 			System.out.println(" SUCCESS");
-			
-		} catch(IOException e) {
+
+		} catch (IOException e) {
 			System.out.println(" FAILED");
 		}
-		
+
 		return img;
 	}
-	
-	//loads images from spritesheet
-	//goes from top left to bottom right, going horizontally first
-	public static ArrayList<BufferedImage> loadAnimation(String filepath, int width, int height){
-		
+
+	// loads images from spritesheet
+	// goes from top left to bottom right, going horizontally first
+	public static ArrayList<BufferedImage> loadAnimation(String filepath, int width, int height) {
+
 		ArrayList<BufferedImage> animation = new ArrayList<BufferedImage>();
-		
+
 		BufferedImage animationPng = GraphicsTools.loadImage(filepath);
-		
+
 		int spritesheetHeight = animationPng.getHeight();
 		int spritesheetWidth = animationPng.getWidth();
-		
-		for(int i = 0; i < spritesheetHeight / height; i++) {
-			for(int j = 0; j < spritesheetWidth / width; j++) {
+
+		for (int i = 0; i < spritesheetHeight / height; i++) {
+			for (int j = 0; j < spritesheetWidth / width; j++) {
 				BufferedImage next = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 				Graphics g = next.getGraphics();
 				g.drawImage(animationPng, -(j * width), -(i * height), null);
 				animation.add(next);
 			}
-			
+
 		}
-		
+
 		return animation;
-		
+
 	}
 }

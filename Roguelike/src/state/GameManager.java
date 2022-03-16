@@ -14,14 +14,14 @@ import util.Vector;
 
 public class GameManager {
 	
-	private Point mouse;
+	public static util.Point mouse;
 
 	public Stack<State> states;
 	
 	public static Vector cameraOffset = new Vector(0, 0);
 	public static Player player = new Player(new Vector(0, 0));
-	public static final int tileSize = 48;	
-	public static final int pixelSize = 3;	//not being used rn
+	public static final int tileSize = 48;	//screen pixel size of each tile
+	public static final int pixelSize = 3;	//size of each pixel in screen pixels
 	
 	public GameManager() {
 		
@@ -33,7 +33,7 @@ public class GameManager {
 	}
 	
 	public void tick(Point mouse2) {
-		this.mouse = mouse2;
+		GameManager.mouse = new util.Point(mouse2.x, mouse2.y);
 		states.peek().tick(mouse2);
 	}
 	

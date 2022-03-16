@@ -73,8 +73,8 @@ public class Player extends Entity{
 	public Player(Vector pos) {
 		super();
 		
-		this.width = 0.5;
-		this.height = 0.5;
+		this.width = 1.1;
+		this.height = 1.1;
 		this.envHitbox = new Hitbox(width, height);
 		this.pos = new Vector(pos);
 		
@@ -244,8 +244,20 @@ public class Player extends Entity{
 	
 	public void draw(Graphics g) {
 		
-		this.drawHitboxes(g);
-		this.drawSprite(this.curAnimation.get(this.curAnimationFrame / this.animationInterval), g);
+		//this.drawHitboxes(g);
+		this.drawShadow(g);
+		
+		Point mouseReal = Entity.convertPointToReal(GameManager.mouse);
+		
+		//making player face towards mouse
+		if(mouseReal.x > this.pos.x) {
+			this.drawSprite(this.curAnimation.get(this.curAnimationFrame / this.animationInterval), g);
+		}
+		else {
+			this.drawHorizontalMirroredSprite(this.curAnimation.get(this.curAnimationFrame / this.animationInterval), g);
+		}
+		
+		//this.drawPointAtSprite(this.curAnimation.get(this.curAnimationFrame / this.animationInterval), g, Entity.convertPointToReal(new Point(GameManager.mouse.x, GameManager.mouse.y)));
 		
 		/*
 		
@@ -334,6 +346,12 @@ public class Player extends Entity{
 			}
 			*/
 		}
+		
+		if((up || down || left || right) && this.curAnimation != Player.runAnimation) {
+			this.curAnimationFrame = 0;
+			this.curAnimation = Player.runAnimation;
+		}
+		
 	}
 	
 	public void keyReleased(int k) {
@@ -354,6 +372,11 @@ public class Player extends Entity{
 		}
 		else if(k == KeyEvent.VK_RIGHT) {
 			rightAttack = false;
+		}
+		
+		if(!(up || down || left || right) && this.curAnimation != Player.idleAnimation) {
+			this.curAnimationFrame = 0;
+			this.curAnimation = Player.idleAnimation;
 		}
 	}
 	
