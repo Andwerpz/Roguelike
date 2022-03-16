@@ -1,4 +1,10 @@
+/map/
+/particle/
 /player/
-/entity/
+/projectile/
+/shapes/
 /state/
 /util/
+/game/
+/item/
+/entity/

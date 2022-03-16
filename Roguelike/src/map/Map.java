@@ -25,14 +25,14 @@ import util.Vector;
 public class Map {
 	//stores all relevant map info
 	
-	public static final int TILE_SIZE = 32;	//used for drawing the map texture
+	public static final int TILE_SIZE = 48;	//used for drawing the map texture
 	
 	//0 : air, 1 : floor, 2 : entrance / exit
 	public int[][] map;
 	BufferedImage mapTexture;
 	BufferedImage wallTexture;
 
-	int mapSize = 250;
+	int mapSize = 200;
 	boolean drawGrid = false;
 	
 	static ArrayList<BufferedImage[]> walls;
@@ -182,293 +182,112 @@ public class Map {
 	ArrayList<ArrayList<Integer>> tileOccupied;
 	
 	public void generateMap() {
-		this.mapTexture = new BufferedImage(mapSize * Map.TILE_SIZE, mapSize * Map.TILE_SIZE, BufferedImage.TYPE_INT_ARGB);
+		
 		this.map = new int[mapSize][mapSize];
-		this.tileOccupied = new ArrayList<ArrayList<Integer>>();
 		
-		for(int i = 0; i < mapSize; i++) {
-			this.tileOccupied.add(new ArrayList<Integer>());
-			for(int j = 0; j < mapSize; j++) {
-				this.tileOccupied.get(i).add(0);
-			}
-		}
+		int tileSize = 50;
+		int innerTileSize = 30;
+		int connectorSize = 4;
+		int numTiles = mapSize / 50;
 		
-		//pick random tile to start
-		//Tile startTile = roomTiles.get((int) (Math.random() * (double) roomTiles.size()));
-		Tile startTile = TilesetManager.startTiles.get((int) (Math.random() * (double) TilesetManager.startTiles.size()));
-		
-		Queue<int[]> exits = new ArrayDeque<int[]>();
-		Queue<Vector> exitDir = new ArrayDeque<Vector>();
-		
-		int startX = mapSize / 2;
-		int startY = mapSize / 2;
-		
-		for(int i = 0; i < startTile.height; i++) {
-			for(int j = 0; j < startTile.width; j++) {
-				int next = startTile.map.get(i).get(j);
-				this.map[i + startY][j + startX] = next;
-			}
-		}
-		
-		for(int i = -2; i < startTile.height + 2; i++) {
-			for(int j = -2; j < startTile.width + 2; j++) {
-				int x = j + startX;
-				int y = i + startY;
-				if(x < 0 || x >= this.mapSize || y < 0 || y >= this.mapSize) {
-					continue;
+		//laying out the 30x30 squares
+		for(int i = 0; i < numTiles; i++) {
+			for(int j = 0; j < numTiles; j++) {
+				int or = i * tileSize;
+				int oc = j * tileSize;
+				int gap = (tileSize - innerTileSize) / 2;
+				for(int r = or + gap; r < or + tileSize - gap; r++) {
+					for(int c = oc + gap; c < oc + tileSize - gap; c++) {
+						this.map[r][c] = 1;
+					}
 				}
-				this.tileOccupied.get(i + startY).set(j + startX, 1);
 			}
 		}
 		
-		for(int[] e : startTile.exits) {
-			exits.add(new int[] {e[0] + startX, e[1] + startY});
-			
-			Vector eDir = new Vector(0, 0);
-			for(int i = 0; i < 4; i++) {
-				int x = e[0] + dx[i];
-				int y = e[1] + dy[i];
+		//TODO generate maze
+		//laying out connectors
+		for(int i = 0; i < numTiles - 1; i++) {
+			for(int j = 0; j < numTiles - 1; j++) {
+				int or = i * tileSize + tileSize / 2;
+				int oc = j * tileSize + tileSize / 2;
 				
-				if(
-						x < 0 || x >= startTile.map.get(0).size() || 
-						y < 0 || y >= startTile.map.size()) {
-					eDir = new Vector(dx[i], dy[i]);
-					break;
+				//right path
+				for(int r = or - connectorSize / 2; r < or + connectorSize / 2; r++) {
+					for(int c = oc; c < oc + tileSize; c++) {
+						this.map[r][c] = 1;
+					}
 				}
-				else if(startTile.map.get(e[1] + dy[i]).get(e[0] + dx[i]) == 1) {
-					eDir = new Vector(-dx[i], -dy[i]);
-					break;
+				
+				//down path
+				for(int c = oc - connectorSize / 2; c < oc + connectorSize / 2; c++) {
+					for(int r = or; r < or + tileSize; r++) {
+						this.map[r][c] = 1;
+					}
 				}
-			}
-			//System.out.println(eDir);
-			exitDir.add(eDir);
-		}
-		
-		Graphics gMap = this.mapTexture.getGraphics();
-		gMap.drawImage(startTile.texture, startX * Map.TILE_SIZE, startY * Map.TILE_SIZE, startTile.width * Map.TILE_SIZE, startTile.height * Map.TILE_SIZE, null);
-		
-		int roomCounter = 0;
-		
-		while(exits.size() != 0) {
-			if(roomCounter > 10000) {
-				break;
-			}
-			
-			//System.out.println(exitDir);
-			
-			if(this.addTileToMap(TilesetManager.roomTiles, exits, exitDir) != -1) {
-				roomCounter ++;
 			}
 		}
 		
+		this.processTileTextures();
 		this.processWallTextures();
 	}
 	
-	public int addTileToMap(ArrayList<Tile> tiles, Queue<int[]> exits, Queue<Vector> exitDir) {
-		if(exits.size() == 0) {
-			return -1;
-		}
+	//run after the map has been generated
+	//tiles the floor with the given tileset.
+	public void processTileTextures() {
 		
-		int[] dx = {-1, 1, 0, 0, 0};
-		int[] dy = {0, 0, -1, 1, 0};
+		this.mapTexture = new BufferedImage(mapSize * Map.TILE_SIZE, mapSize * Map.TILE_SIZE, BufferedImage.TYPE_INT_ARGB);
+		Graphics gImg = this.mapTexture.getGraphics();
 		
-		int[] nextExit = exits.poll();
-		Vector nextExitDir = exitDir.poll();
+		boolean[][] v = new boolean[this.mapSize][this.mapSize];
 		
-		//try every tile in random order, until you get one
-		
-		//TODO implement some sort of rare room system
-		Collections.shuffle(tiles);
-		
-		for(Tile t : tiles) {
-			for(int[] e : t.exits) {
-				
-				//determine if both exits are facing the same direction
-				if(
-						e[0] + nextExitDir.x < 0 || e[0] + nextExitDir.x >= t.map.get(0).size() ||
-						e[1] + nextExitDir.y < 0 || e[1] + nextExitDir.y >= t.map.size() ||
-						t.map.get(e[1] + (int) nextExitDir.y).get(e[0] + (int) nextExitDir.x) == 0) {
-					continue;
-				}
-				
-				//the exits are compatible
-				//place the tile, and move it back if placement is invalid
-				
-				for(int con = minConnectorLength; con <= maxConnectorLength; con++) {
-				
-					int ox = nextExit[0] + (int) nextExitDir.x * con;	//origin x
-					int oy = nextExit[1] + (int) nextExitDir.y * con;
+		for(int i = 0; i < this.mapSize; i++) {
+			for(int j = 0; j < this.mapSize; j++) {
+				if(this.map[i][j] == 1 && !v[i][j]) {
 					
-					int ex = e[0];
-					int ey = e[1];
+					int ox = i * GameManager.tileSize;
+					int oy = j * GameManager.tileSize;
 					
-					int minX = ox - ex;
-					int maxX = ox - ex + t.width;
-					int minY = oy - ey;
-					int maxY = oy - ey + t.height;
-					
-					if(minX < 0 || minY < 0 || maxX >= mapSize || maxY >= mapSize) {	//tile out of bounds
-						continue;
+					boolean canPlaceLarge = true;
+					if(i + 1 == this.mapSize || j + 1 == this.mapSize) {
+						canPlaceLarge = false;
+					}
+					else if(
+							this.map[i + 1][j] != 1 ||
+							this.map[i + 1][j + 1] != 1 ||
+							this.map[i][j + 1] != 1 ||
+							v[i + 1][j] ||
+							v[i + 1][j + 1] ||
+							v[i][j + 1]){
+						canPlaceLarge = false;
 					}
 					
-					//check whether exit placement is valid
-					//just check against bounding boxes
-					boolean isValid = true;
-					
-					outer:
-					for(int i = 0; i < t.height; i++) {
-						for(int j = 0; j < t.width; j++) {
-							int x = j + ox - ex;
-							int y = i + oy - ey;
-							
-							for(int k = 0; k < this.dx.length; k++) {
-								
-								if(x + this.dx[k] < 0 || y + this.dy[k] < 0 || x + this.dx[k] >= this.mapSize || y + this.dy[k] >= this.mapSize) {
-									continue;
-								}
-								
-								if(this.tileOccupied.get(y + this.dy[k]).get(x + this.dx[k]) == 1) {
-									isValid = false;
-									break outer;
-								}
-							}
-							
-							/*
-							int mapVal = map.get(y).get(x);
-							int tileVal = t.map.get(i).get(j);
-							
-							
-							if(tileVal == 2) {
-								if(mapVal != 2 && mapVal != 0) {
-									isValid = false;
-									break outer;
-								}
-							}
-							else if(tileVal == 0) {
-								//do nothing
-							}
-							else {
-								//we know the tile is a floor tile
-								//check this tile, and all adjacent tiles
-								
-								for(int k = 0; k < dx.length; k++) {
-									int nx = x + dx[k];
-									int ny = y + dy[k];
-									
-									if(ny < 0 || nx < 0 || ny >= map.size() || nx >= map.get(0).size() ||
-											i + dy[k] < 0 || j + dx[k] < 0 || i + dy[k] >= t.map.get(0).size() || j + dx[k] >= t.map.get(0).size()) {	//out of bounds
-										
-										continue;
-									}
-									
-									if(map.get(ny).get(nx) == 2 && t.map.get(i + dy[k]).get(j + dx[k]) == 2) {
-										continue;
-									}
-									
-									else if(map.get(ny).get(nx) != 0) {
-										isValid = false;
-										break outer;
-									}
-								}
-							}
-							*/
-						}
-					}
-				
-					if(!isValid) {
-						continue;
-					}
-					
-					for(int i = 0; i < t.height; i++) {
-						for(int j = 0; j < t.width; j++) {
-							int x = j + ox - ex;
-							int y = i + oy - ey;
-							
-							int mapVal = map[y][x];
-							int tileVal = t.map.get(i).get(j);
-							
-							if(t.map.get(i).get(j) != 2) {
-								map[y][x] = t.map.get(i).get(j);
-							}
-							
-							//this.tileOccupied.get(y).set(x, 1);
-						}
-					}
-					
-					for(int i = -2; i < t.height + 2; i++) {
-						for(int j = -2; j < t.width + 2; j++) {
-							int x = j + ox - ex;
-							int y = i + oy - ey;
-							if(x < 0 || x >= this.mapSize || y < 0 || y >= this.mapSize) {
-								continue;
-							}
-							this.tileOccupied.get(y).set(x, 1);
-						}
-					}
-					
-					//draw tile texture onto map
-					Graphics gMap = this.mapTexture.getGraphics();
-					gMap.drawImage(t.texture, minX * Map.TILE_SIZE, minY * Map.TILE_SIZE, t.width * Map.TILE_SIZE, t.height * Map.TILE_SIZE, null);
-					
-					//set current exit
-					map[oy][ox] = 2;
-					map[nextExit[1]][nextExit[0]] = 2;
-					
-					//set pathway between the two
-					int px = nextExit[0] + (int) nextExitDir.x;
-					int py = nextExit[1] + (int) nextExitDir.y;
-					
-					//System.out.println("[" + ox + ", " + oy + "], [" + px + ", " + py + "]");
-					
-					while(px != ox || py != oy) {
-						map[py][px] = 1;
+					if(canPlaceLarge && Math.random() > 0.95) {	//large 2x2 tile
+						v[i + 1][j] = true;
+						v[i + 1][j + 1] = true;
+						v[i][j + 1] = true;
+						v[i][j] = true;
 						
-						gMap.drawImage(tileSpritesheet.get(1), px * Map.TILE_SIZE, py * Map.TILE_SIZE, Map.TILE_SIZE, Map.TILE_SIZE, null);
-						
-						px += (int) nextExitDir.x;
-						py += (int) nextExitDir.y;
+						gImg.drawImage(Map.tileSpritesheet.get(2), ox, oy, GameManager.tileSize, GameManager.tileSize, null);
+						gImg.drawImage(Map.tileSpritesheet.get(3), ox + GameManager.tileSize, oy, GameManager.tileSize, GameManager.tileSize, null);
+						gImg.drawImage(Map.tileSpritesheet.get(4), ox + GameManager.tileSize, oy + GameManager.tileSize, GameManager.tileSize, GameManager.tileSize, null);
+						gImg.drawImage(Map.tileSpritesheet.get(5), ox, oy + GameManager.tileSize, GameManager.tileSize, GameManager.tileSize, null);
 					}
-					
-					gMap.drawImage(tileSpritesheet.get(1), ox * Map.TILE_SIZE, oy * Map.TILE_SIZE, Map.TILE_SIZE, Map.TILE_SIZE, null);
-					gMap.drawImage(tileSpritesheet.get(1), nextExit[0] * Map.TILE_SIZE, nextExit[1] * Map.TILE_SIZE, Map.TILE_SIZE, Map.TILE_SIZE, null);
-					
-					//add exits to stack
-					for(int[] exit : t.exits) {
-						exits.add(new int[] {exit[0] + minX, exit[1] + minY});
-						
-						Vector eDir = new Vector(0, 0);
-						for(int i = 0; i < 4; i++) {
-							int x = exit[0] + dx[i];
-							int y = exit[1] + dy[i];
-							
-							if(
-									x < 0 || x >= t.map.get(0).size() || 
-									y < 0 || y >= t.map.size()) {
-								eDir = new Vector(dx[i], dy[i]);
-								break;
-							}
-							else if(t.map.get(exit[1] + dy[i]).get(exit[0] + dx[i]) == 1) {
-								eDir = new Vector(-dx[i], -dy[i]);
-								break;
-							}
-						}
-						//System.out.println(eDir);
-						exitDir.add(eDir);
+					else if(Math.random() > 0.8) {	//small 1/2 tiles
+						v[i][j] = true;
+						gImg.drawImage(Map.tileSpritesheet.get(0), ox, oy, GameManager.tileSize, GameManager.tileSize, null);
 					}
-					
-					
-					
-					//System.out.println(nextExitDir);
-					
-					return 1;
+					else {	//regular tile
+						v[i][j] = true;
+						gImg.drawImage(Map.tileSpritesheet.get(1), ox, oy, GameManager.tileSize, GameManager.tileSize, null);
+					}
 				}
 			}
-
 		}
-		return -1;
+		
 	}
 	
-	//includes out of tile textures - now it's just a black background
+	//run after map has been generated
+	//creates wall textures
 	public void processWallTextures() {
 		
 		//change map to suit needs

@@ -245,7 +245,6 @@ public class Player extends Entity{
 	public void draw(Graphics g) {
 		
 		//this.drawHitboxes(g);
-		this.drawShadow(g);
 		
 		Point mouseReal = Entity.convertPointToReal(GameManager.mouse);
 		

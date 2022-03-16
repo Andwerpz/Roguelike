@@ -9,6 +9,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.util.Stack;
 
+import item.Item;
 import player.Player;
 import util.Vector;
 
@@ -26,6 +27,7 @@ public class GameManager {
 	public GameManager() {
 		
 		Player.loadTextures();
+		Item.loadTextures();
 		
 		states = new Stack<State>();
 		states.push(new GameState(this));
