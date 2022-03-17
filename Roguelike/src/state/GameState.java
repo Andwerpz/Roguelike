@@ -77,14 +77,12 @@ public class GameState extends State{
 
 	@Override
 	public void mousePressed(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-		
+		this.gp.mousePressed(arg0);
 	}
 
 	@Override
 	public void mouseReleased(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-		
+		this.gp.mouseReleased(arg0);
 	}
 
 	@Override

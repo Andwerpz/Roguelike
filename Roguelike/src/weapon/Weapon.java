@@ -20,6 +20,7 @@ public abstract class Weapon extends Item{
 	}
 	
 	public static void loadTextures() {
+		Weapon.sprites = new HashMap<>();
 		ArrayList<BufferedImage> wepSprites = GraphicsTools.loadAnimation("/weapon sprites.png", 32, 32);
 		sprites.put("Pump Shotgun", wepSprites.get(0));
 	}

@@ -31,7 +31,7 @@ public abstract class Entity {
 	
 	public double friction = 0.25;	//how much speed is leaked between frames.
 	
-	public boolean envCollision = false;	//did this entity collide with the environment?	used for projectiles
+	public boolean envCollision = false;	//is true if entity collided with environment on the last tick
 	
 	public Entity() {
 		this.vel = new Vector(0, 0);
@@ -71,7 +71,7 @@ public abstract class Entity {
 	//draws shadow centered around bottom middle of hitbox
 	public void drawShadow(Graphics g) {
 		Graphics2D g2 = (Graphics2D) g;
-		g2.setComposite(GraphicsTools.makeComposite(0.25));
+		g2.setComposite(GraphicsTools.makeComposite(0.5));
 		g.setColor(Color.BLACK);
 	
 		Point screen = new Point(this.pos);
@@ -113,13 +113,24 @@ public abstract class Entity {
 				(int) (height * GameManager.tileSize), null);
 	}
 	
-	//rotating clockwise?
+	//rotates image before drawing
+	//it first enlarges the image to full resolution, then it rotates it to minimize pixel displacement
 	public void drawRotatedSprite(BufferedImage sprite, Graphics g, double rads) {
-		BufferedImage rotatedImg = GraphicsTools.rotateImageByDegrees(sprite, Math.toDegrees((rads)));
-		this.drawSprite(rotatedImg, g);
+		BufferedImage newImg = new BufferedImage(sprite.getWidth() * GameManager.pixelSize, sprite.getHeight() * GameManager.pixelSize, BufferedImage.TYPE_INT_ARGB);
+		Graphics gImg = newImg.getGraphics();
+		gImg.drawImage(sprite, 0, 0, sprite.getWidth() * GameManager.pixelSize, sprite.getHeight() * GameManager.pixelSize, null);
+		BufferedImage rotatedImg = GraphicsTools.rotateImageByDegrees(newImg, Math.toDegrees((rads)));
+		
+		double width = (double) rotatedImg.getWidth() / (double) (GameManager.tileSize);
+		double height = (double) rotatedImg.getHeight() / (double) (GameManager.tileSize);
+		g.drawImage(rotatedImg, 
+				(int) ((this.pos.x - width / 2) * GameManager.tileSize - GameManager.cameraOffset.x), 
+				(int) ((this.pos.y - height + this.height / 2) * GameManager.tileSize - GameManager.cameraOffset.y), 
+				(int) (width * (double) GameManager.tileSize), 
+				(int) (height * (double) GameManager.tileSize), null);
 	}
 	
-	//rotating clockwise?
+	//don't use this one
 	public void drawRotatedSprite(BufferedImage sprite, Graphics g, double rads, double width, double height) {
 		BufferedImage rotatedImg = GraphicsTools.rotateImageByDegrees(sprite, Math.toDegrees((rads)));
 		

@@ -7,11 +7,16 @@ import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
+import java.util.ArrayList;
 import java.util.Stack;
 
+import enemy.Enemy;
 import item.Item;
+import particle.Particle;
 import player.Player;
+import projectile.Projectile;
 import util.Vector;
+import weapon.Weapon;
 
 public class GameManager {
 	
@@ -24,10 +29,17 @@ public class GameManager {
 	public static final int tileSize = 48;	//screen pixel size of each tile
 	public static final int pixelSize = 3;	//size of each pixel in screen pixels
 	
+	public static ArrayList<Item> items;
+	public static ArrayList<Enemy> enemies;
+	public static ArrayList<Particle> particles;
+	public static ArrayList<Projectile> projectiles;
+	
 	public GameManager() {
 		
 		Player.loadTextures();
 		Item.loadTextures();
+		Projectile.loadTextures();
+		Weapon.loadTextures();
 		
 		states = new Stack<State>();
 		states.push(new GameState(this));

@@ -2,9 +2,11 @@ package game;
 
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
 
 import map.Map;
 import particle.Particle;
+import projectile.LongBullet;
 import projectile.Projectile;
 import state.GameManager;
 import util.Point;
@@ -23,24 +25,19 @@ public class GamePanel {
 	
 	public Map map;
 	
-	public ArrayList<Item> items;
-	public ArrayList<Enemy> enemies;
-	public ArrayList<Particle> particles;
-	public ArrayList<Projectile> projectiles;
-	
 	public GamePanel(Map map) {
 		this.map = map;
 		
-		this.items = new ArrayList<>();
-		this.enemies = new ArrayList<>();
-		this.particles = new ArrayList<>();
-		this.projectiles = new ArrayList<>();
+		GameManager.items = new ArrayList<>();
+		GameManager.enemies = new ArrayList<>();
+		GameManager.particles = new ArrayList<>();
+		GameManager.projectiles = new ArrayList<>();
 		
 	}
 	
 	public void tick() {
-		if(this.items.size() != 10) {
-			this.items.add(new Coin(new Vector(30, 30)));
+		if(GameManager.items.size() != 10) {
+			GameManager.items.add(new Coin(new Vector(30, 30)));
 		}
 		
 		GameManager.player.tick(map);
@@ -59,26 +56,32 @@ public class GamePanel {
 		//System.out.println(GameManager.cameraOffset.x + " " + GameManager.cameraOffset.y);
 		//System.out.println(GameManager.player.pos.x + " " + GameManager.player.pos.y);
 		
-		for(int index = 0; index < items.size(); index ++) {
-			Item i = items.get(index);
+		for(int index = 0; index < GameManager.items.size(); index ++) {
+			Item i = GameManager.items.get(index);
 			i.tick(map);
 			if(i.collision(GameManager.player) && i.autoPickup) {
 				i.onPickup();
-				items.remove(i);
+				GameManager.items.remove(i);
 				index--;
 			}
 		}
 		
-		for(Enemy e : enemies) {
+		for(Enemy e : GameManager.enemies) {
 			e.tick(map);
 		}
 		
-		for(Particle p : particles) {
+		for(Particle p : GameManager.particles) {
 			p.tick(map);
 		}
 		
-		for(Projectile p : projectiles) {
+		for(int index = 0; index < GameManager.projectiles.size(); index++) {
+			Projectile p = GameManager.projectiles.get(index);
 			p.tick(map);
+			if(p.envCollision) {
+				p.despawn();
+				GameManager.projectiles.remove(p);
+				index --;
+			}
 		}
 		
 	}
@@ -88,16 +91,16 @@ public class GamePanel {
 		this.map.drawFloor(g);
 		
 		//draw shadows first
-		for(Item i : items) {
+		for(Item i : GameManager.items) {
 			i.drawShadow(g);
 		}
-		for(Enemy e : enemies) {
+		for(Enemy e : GameManager.enemies) {
 			e.drawShadow(g);
 		}
-		for(Particle p : particles) {
+		for(Particle p : GameManager.particles) {
 			p.drawShadow(g);
 		}
-		for(Projectile p : projectiles) {
+		for(Projectile p : GameManager.projectiles) {
 			p.drawShadow(g);
 		}
 		GameManager.player.drawShadow(g);
@@ -105,19 +108,27 @@ public class GamePanel {
 		this.map.drawWalls(g);
 		
 		//draw sprites
-		for(Item i : items) {
+		for(Item i : GameManager.items) {
 			i.draw(g);
 		}
-		for(Enemy e : enemies) {
+		for(Enemy e : GameManager.enemies) {
 			e.draw(g);
 		}
-		for(Particle p : particles) {
+		for(Particle p : GameManager.particles) {
 			p.draw(g);
 		}
-		for(Projectile p : projectiles) {
+		for(Projectile p : GameManager.projectiles) {
 			p.draw(g);
 		}
 		GameManager.player.draw(g);
+	}
+	
+	public void mousePressed(MouseEvent arg0) {
+		GameManager.player.mousePressed(arg0);
+	}
+	
+	public void mouseReleased(MouseEvent arg0) {
+		GameManager.player.mouseReleased(arg0);
 	}
 	
 	public void keyPressed(KeyEvent arg0) {

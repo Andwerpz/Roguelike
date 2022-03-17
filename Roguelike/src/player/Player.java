@@ -11,6 +11,7 @@ import java.util.HashMap;
 import entity.Entity;
 import entity.Hitbox;
 import map.Map;
+import projectile.LongBullet;
 import main.Main;
 import main.MainPanel;
 import state.GameManager;
@@ -302,9 +303,15 @@ public class Player extends Entity{
 	public void mousePressed(MouseEvent arg0) {	
 		this.mouseAttack = true;
 		//this.attack(new Point(mouse.x, mouse.y));
+		
+		Vector mouseReal = new Vector(Entity.convertPointToReal(GameManager.mouse));
+		Vector playerToMouse = new Vector(this.pos, mouseReal);
+		playerToMouse.normalize();
+		playerToMouse.setMagnitude(0.5);
+		GameManager.projectiles.add(new LongBullet(new Vector(GameManager.player.pos), playerToMouse, 1, 1, 1));
 	}
 	
-	public void mouseReleased() {
+	public void mouseReleased(MouseEvent arg0) {
 		this.mouseAttack = false;
 	}
 	
