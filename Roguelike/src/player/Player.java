@@ -11,6 +11,7 @@ import java.util.HashMap;
 import entity.Entity;
 import entity.Hitbox;
 import map.Map;
+import projectile.LaserRed;
 import projectile.LongBullet;
 import main.Main;
 import main.MainPanel;
@@ -18,6 +19,8 @@ import state.GameManager;
 import util.GraphicsTools;
 import util.Point;
 import util.Vector;
+import weapon.PumpShotgun;
+import weapon.Weapon;
 
 public class Player extends Entity{
 	
@@ -60,6 +63,7 @@ public class Player extends Entity{
 	public boolean leftAttack = false;
 	public boolean rightAttack = false;
 	
+	public Weapon equippedWeapon = new PumpShotgun(new Vector(0, 0));
 	public boolean pickUpWeapon = false;
 	
 	//public Weapon equippedWeapon = new AK47(new Vector(0, 0));
@@ -245,8 +249,6 @@ public class Player extends Entity{
 	
 	public void draw(Graphics g) {
 		
-		//this.drawHitboxes(g);
-		
 		Point mouseReal = Entity.convertPointToReal(GameManager.mouse);
 		
 		//making player face towards mouse
@@ -257,37 +259,24 @@ public class Player extends Entity{
 			this.drawHorizontalMirroredSprite(this.curAnimation.get(this.curAnimationFrame / this.animationInterval), g);
 		}
 		
-		//this.drawPointAtSprite(this.curAnimation.get(this.curAnimationFrame / this.animationInterval), g, Entity.convertPointToReal(new Point(GameManager.mouse.x, GameManager.mouse.y)));
-		
-		/*
 		
 		//draw the currently equipped weapon
-		BufferedImage wepImg = Weapon.sprites.get(this.equippedWeapon.id);
-		Point center = new Point((pos.x) * GameManager.tileSize + MainPanel.WIDTH / 2 - GameManager.cameraOffset.x, (pos.y) * GameManager.tileSize + MainPanel.HEIGHT / 2 - GameManager.cameraOffset.y);
+		BufferedImage wepImg = PumpShotgun.sprite;
 		
-		Vector attackVector = new Vector(center, new Point(mouse.x, mouse.y));
-		attackVector.setMagnitude(1.5);
+		Vector attackVector = new Vector(new Point(GameManager.player.pos), Entity.convertPointToReal(new Point(GameManager.mouse.x, GameManager.mouse.y)));
+		attackVector.setMagnitude(0.5);
 		
+		//flipping image if on left side of player
 		double rads = Math.atan2(attackVector.y, attackVector.x);
-		
-		//System.out.println(rads % (Math.PI * 2));
 		if(rads < -Math.PI / 2d || rads > Math.PI / 2d) {
 			wepImg = GraphicsTools.flipImageVertical(wepImg);
 		}
 		
-		BufferedImage rotatedImg = GraphicsTools.rotateImageByDegrees(wepImg, Math.toDegrees((rads)));
-		
-		double sin = Math.abs(Math.sin(rads)), cos = Math.abs(Math.cos(rads));
-		double w = this.equippedWeapon.width;
-	    double h = this.equippedWeapon.height;
-	    double newWidth = w * cos + h * sin;
-	    double newHeight = h * cos + w * sin;
-		
-		this.equippedWeapon.pos = new Vector(this.pos);
+		this.equippedWeapon.pos = new Vector(GameManager.player.pos);
 		this.equippedWeapon.pos.addVector(attackVector);
+		this.equippedWeapon.pos.addVector(new Vector(0, 0.35));	//move down so that the wep isn't in front of player's head
 		
-		this.equippedWeapon.drawSprite(rotatedImg, g, newWidth, newHeight);
-		*/
+		this.equippedWeapon.drawPointAtSprite(wepImg, g, attackVector);
 	}
 	
 	/*
@@ -304,11 +293,7 @@ public class Player extends Entity{
 		this.mouseAttack = true;
 		//this.attack(new Point(mouse.x, mouse.y));
 		
-		Vector mouseReal = new Vector(Entity.convertPointToReal(GameManager.mouse));
-		Vector playerToMouse = new Vector(this.pos, mouseReal);
-		playerToMouse.normalize();
-		playerToMouse.setMagnitude(0.5);
-		GameManager.projectiles.add(new LongBullet(new Vector(GameManager.player.pos), playerToMouse, 1, 1, 1));
+		this.equippedWeapon.attack();
 	}
 	
 	public void mouseReleased(MouseEvent arg0) {

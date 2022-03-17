@@ -10,6 +10,7 @@ import map.Map;
 import state.GameManager;
 import util.GraphicsTools;
 import util.Vector;
+import weapon.Weapon;
 
 public abstract class Item extends entity.Entity {
 	
@@ -31,7 +32,7 @@ public abstract class Item extends entity.Entity {
 	public static void loadTextures() {
 		Coin.animation = GraphicsTools.loadAnimation("/coin_rotate.png", 8, 8);
 		//Apple.animation = GraphicsTools.loadAnimation("/Textures/Items/Apple/apple.png", 32, 35);
-		//Weapon.loadAnimations();
+		Weapon.loadTextures();
 	}
 	
 	public void drawCostIndicator(Graphics g) {

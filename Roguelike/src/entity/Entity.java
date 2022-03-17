@@ -145,9 +145,7 @@ public abstract class Entity {
 	
 	//draws sprite so that it faces the direction of the point at vector
 	public void drawPointAtSprite(BufferedImage sprite, Graphics g, Vector pointAt) {
-		
 		double rads = Math.atan2(pointAt.y, pointAt.x);
-		
 		this.drawRotatedSprite(sprite, g, rads);
 	}
 	
@@ -156,17 +154,15 @@ public abstract class Entity {
 		this.drawPointAtSprite(sprite, g, new Vector(realPoint.x - this.pos.x, realPoint.y - this.pos.y));
 	}
 	
+	//don't use this one
 	public void drawPointAtSprite(BufferedImage sprite, Graphics g, Vector pointAt, double width, double height) {
-		
 		double rads = Math.atan2(pointAt.y, pointAt.x);
-		
 		this.drawRotatedSprite(sprite, g, rads, width, height);
 	}
 	
 	public void drawHitboxes(Graphics g) {
-		g.setColor(Color.black);
+		g.setColor(Color.green);
 		envHitbox.draw(g, new Vector(this.pos));
-			
 	}
 	
 	public boolean outOfBounds(Map map) {

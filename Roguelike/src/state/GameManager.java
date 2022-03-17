@@ -39,7 +39,6 @@ public class GameManager {
 		Player.loadTextures();
 		Item.loadTextures();
 		Projectile.loadTextures();
-		Weapon.loadTextures();
 		
 		states = new Stack<State>();
 		states.push(new GameState(this));

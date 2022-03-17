@@ -97,12 +97,12 @@ public class GamePanel {
 		for(Enemy e : GameManager.enemies) {
 			e.drawShadow(g);
 		}
-		for(Particle p : GameManager.particles) {
-			p.drawShadow(g);
-		}
-		for(Projectile p : GameManager.projectiles) {
-			p.drawShadow(g);
-		}
+//		for(Particle p : GameManager.particles) {
+//			p.drawShadow(g);
+//		}
+//		for(Projectile p : GameManager.projectiles) {
+//			p.drawShadow(g);
+//		}
 		GameManager.player.drawShadow(g);
 		
 		this.map.drawWalls(g);

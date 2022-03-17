@@ -1,12 +1,8 @@
-/map/
-/particle/
-/player/
 /projectile/
-/shapes/
-/state/
-/util/
+/laser_red.png
+/player/
 /game/
-/item/
-/entity/
 /weapon/
-/long_bullet.png
+/entity/
+/state/
+/item/

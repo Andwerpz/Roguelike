@@ -8,23 +8,22 @@ import map.Map;
 import util.GraphicsTools;
 import util.Vector;
 
-public class LongBullet extends Projectile {
+public class LaserRed extends Projectile{
 	
 	public static ArrayList<BufferedImage> sprite;
-
-	public LongBullet(Vector pos, Vector vel, int damage) {
-		super(pos, vel, 1, 1, damage, LongBullet.sprite);
-		// TODO Auto-generated constructor stub
+	
+	public LaserRed(Vector pos, Vector vel, int damage) {
+		super(pos, vel, 1, 1, damage, LaserRed.sprite, 1);
 	}
 	
 	public static void loadTextures() {
-		LongBullet.sprite = GraphicsTools.loadAnimation("/long_bullet.png", 26, 5);
+		LaserRed.sprite = GraphicsTools.loadAnimation("/laser_red.png", 26, 5);
 	}
-	
+
 	@Override
 	public void despawn() {
 		// TODO Auto-generated method stub
 		
-	}	
-	
+	}
+
 }

@@ -13,16 +13,20 @@ import util.Vector;
 public abstract class Weapon extends Item{
 	
 	public static HashMap<String, BufferedImage> sprites;
+	public BufferedImage sprite;
 	public String name;
 
-	public Weapon(Vector pos) {
+	public Weapon(Vector pos, BufferedImage sprite) {
 		super(pos, new Vector(0, 0), 2, 2);
+		this.sprite = sprite;
 	}
 	
 	public static void loadTextures() {
 		Weapon.sprites = new HashMap<>();
 		ArrayList<BufferedImage> wepSprites = GraphicsTools.loadAnimation("/weapon sprites.png", 32, 32);
 		sprites.put("Pump Shotgun", wepSprites.get(0));
+
+		PumpShotgun.sprite = sprites.get("Pump Shotgun");
 	}
 	
 	public abstract void attack();
