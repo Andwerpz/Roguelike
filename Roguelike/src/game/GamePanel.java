@@ -36,7 +36,6 @@ public class GamePanel {
 		this.particles = new ArrayList<>();
 		this.projectiles = new ArrayList<>();
 		
-		
 	}
 	
 	public void tick() {

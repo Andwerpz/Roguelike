@@ -39,6 +39,14 @@ public abstract class Entity {
 		this.envHitbox = new Hitbox(1, 1);
 	}
 	
+	public Entity(Vector pos, Vector vel, double width, double height) {
+		this.pos = new Vector(pos);
+		this.vel = new Vector(vel);
+		this.width = width;
+		this.height = height;
+		this.envHitbox = new Hitbox(width, height);
+	}
+	
 	public abstract void tick(Map map);
 	public abstract void draw(Graphics g);
 	
