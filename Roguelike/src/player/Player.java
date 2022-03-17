@@ -73,8 +73,8 @@ public class Player extends Entity{
 	public Player(Vector pos) {
 		super();
 		
-		this.width = 1.1;
-		this.height = 1.1;
+		this.width = 1.2;
+		this.height = 1.2;
 		this.envHitbox = new Hitbox(width, height);
 		this.pos = new Vector(pos);
 		

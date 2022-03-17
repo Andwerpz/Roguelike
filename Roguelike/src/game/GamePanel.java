@@ -85,7 +85,8 @@ public class GamePanel {
 	}
 	
 	public void draw(Graphics g) {
-		this.map.draw(g);
+		this.map.drawBackground(g);
+		this.map.drawFloor(g);
 		
 		//draw shadows first
 		for(Item i : items) {
@@ -101,6 +102,8 @@ public class GamePanel {
 			p.drawShadow(g);
 		}
 		GameManager.player.drawShadow(g);
+		
+		this.map.drawWalls(g);
 		
 		//draw sprites
 		for(Item i : items) {

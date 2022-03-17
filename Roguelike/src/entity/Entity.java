@@ -27,8 +27,6 @@ public abstract class Entity {
 	
 	public double acceleration = 0.1;	//units per frame. For now, units are map grid cells
 	
-	public boolean onGround = false;
-	
 	public double maxSpeed = 0.25;	//maximum tiles per frame
 	
 	public double friction = 0.25;	//how much speed is leaked between frames.
@@ -174,27 +172,6 @@ public abstract class Entity {
 		
 		this.outOfBounds(map);
 		
-		//ground check
-		
-		this.onGround = false;
-		
-		for(int i = 0; i < 4; i++) {
-			Point p = new Point(envHitbox.corners[i]);
-			int tileX = (int) (p.x + this.pos.x);
-			int tileY = (int) (p.y + this.pos.y + cushion * 2);
-			//System.out.println(tileX + " " + tileY + " " + map.map[tileY][tileX]);
-			if(map.map[tileY][tileX] == 0) {
-				this.onGround = true;
-				this.envCollision = true;
-				this.vel.y = 0;
-				this.pos.y += (((double) tileY - cushion) - (p.y + this.pos.y));
-				//System.out.println(((double) tileY - cushion) - (p.y + this.pos.y));
-				break;
-			}
-		}
-		
-		//System.out.println((0.5d + this.pos.y) + " " +  this.onGround);
-		
 		//friction
 		this.vel.multiply(1d - this.friction);
 		//this.vel.setMagnitude(Math.min(maxSpeed, this.vel.getMagnitude()));
@@ -289,7 +266,7 @@ public abstract class Entity {
 		}
 		
 		//downward movement
-		if(!this.onGround && this.vel.y > 0) {
+		if(this.vel.y > 0) {
 			Point lowerRight = new Point(envHitbox.lowerRight);
 			Point lowerLeft = new Point(envHitbox.lowerLeft);
 			
@@ -308,7 +285,7 @@ public abstract class Entity {
 				
 				if(map.map[tileY][tileX] == 0) {
 					collision = true;
-					collisionY = (double) tileY - cushion * 10;
+					collisionY = (double) tileY - cushion;
 					break;
 				}
 			}
@@ -318,7 +295,7 @@ public abstract class Entity {
 			
 			if(map.map[tileY][tileX] == 0) {
 				collision = true;
-				collisionY = (double) tileY - cushion * 10;
+				collisionY = (double) tileY - cushion;
 			}
 			
 			if(collision) {
@@ -350,7 +327,7 @@ public abstract class Entity {
 				
 				if(map.map[tileY][tileX] == 0) {
 					collision = true;
-					collisionY = (double) tileY + cushion + 1d;;
+					collisionY = (double) tileY + cushion + 1d;
 					break;
 				}
 			}

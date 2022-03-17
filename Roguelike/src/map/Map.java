@@ -13,6 +13,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Queue;
+import java.util.Stack;
 import java.util.StringTokenizer;
 
 import input.Button;
@@ -176,6 +177,19 @@ public class Map {
 		g.drawImage(wallTexture, (int) -GameManager.cameraOffset.x, (int) -GameManager.cameraOffset.y, this.mapSize * GameManager.tileSize, this.mapSize * GameManager.tileSize, null);
 	}
 	
+	public void drawBackground(Graphics g) {
+		g.setColor(Color.BLACK);
+		g.fillRect(0, 0, MainPanel.WIDTH, MainPanel.HEIGHT);
+	}
+	
+	public void drawWalls(Graphics g) {
+		g.drawImage(wallTexture, (int) -GameManager.cameraOffset.x, (int) -GameManager.cameraOffset.y, this.mapSize * GameManager.tileSize, this.mapSize * GameManager.tileSize, null);
+	}
+	
+	public void drawFloor(Graphics g) {
+		g.drawImage(mapTexture, (int) -GameManager.cameraOffset.x, (int) -GameManager.cameraOffset.y, this.mapSize * GameManager.tileSize, this.mapSize * GameManager.tileSize, null);
+	}
+	
 	int minConnectorLength = 5;
 	int maxConnectorLength = 10;
 	
@@ -203,26 +217,93 @@ public class Map {
 				}
 			}
 		}
+
+		//generating connections with stack based maze structure
+		boolean[][] v = new boolean[numTiles][numTiles];
+		Stack<int[]> s = new Stack<int[]>();
+		s.add(new int[] {0, 0});
+		v[0][0] = true;
 		
-		//TODO generate maze
-		//laying out connectors
-		for(int i = 0; i < numTiles - 1; i++) {
-			for(int j = 0; j < numTiles - 1; j++) {
-				int or = i * tileSize + tileSize / 2;
-				int oc = j * tileSize + tileSize / 2;
-				
-				//right path
-				for(int r = or - connectorSize / 2; r < or + connectorSize / 2; r++) {
-					for(int c = oc; c < oc + tileSize; c++) {
-						this.map[r][c] = 1;
+		int[] dr = new int[] {-1, 1, 0, 0};
+		int[] dc = new int[] {0, 0, -1, 1};
+		
+		outer:
+		while(s.size() != 0) {
+			int[] cur = s.peek();
+			while(true) {
+				boolean curValid = false;
+				//check for an available adjacent tile
+				for(int i = 0; i < 4; i++) {
+					int rNext = cur[0] + dr[i];
+					int cNext = cur[1] + dc[i];
+					if(rNext < 0 || rNext >= numTiles || cNext < 0 || cNext >= numTiles) {
+						continue;
+					}
+					if(!v[rNext][cNext]) {
+						curValid = true;
+						break;
 					}
 				}
 				
-				//down path
-				for(int c = oc - connectorSize / 2; c < oc + connectorSize / 2; c++) {
-					for(int r = or; r < or + tileSize; r++) {
-						this.map[r][c] = 1;
+				if(curValid) {	//available adjacent tile found
+					break;
+				}
+				
+				//no available adjacent tiles
+				s.pop();
+				if(s.size() == 0) {	//no more tiles in stack
+					break outer;
+				}
+			}
+
+			while(true) {
+				int i = (int) (Math.random() * 4);
+				
+				int rNext = cur[0] + dr[i];
+				int cNext = cur[1] + dc[i];
+				if(rNext < 0 || rNext >= numTiles || cNext < 0 || cNext >= numTiles) {
+					continue;
+				}
+				if(!v[rNext][cNext]) {	//found available tile
+					
+					v[rNext][cNext] = true;
+					s.add(new int[] {rNext, cNext});
+					
+					int or = cur[0] * tileSize + tileSize / 2;
+					int oc = cur[1] * tileSize + tileSize / 2;
+					
+					//System.out.println(rNext + " " + cNext + " " + dr[i] + " " + dc[i] + " " + or + " " + oc);
+					
+					//fill in path to the next tile
+					if(dc[i] == -1) {	//left
+						for(int r = or - connectorSize / 2; r < or + connectorSize / 2; r++) {
+							for(int c = oc; c > oc - tileSize; c--) {
+								this.map[r][c] = 1;
+							}
+						}
 					}
+					else if(dc[i] == 1) {	//right
+						for(int r = or - connectorSize / 2; r < or + connectorSize / 2; r++) {
+							for(int c = oc; c < oc + tileSize; c++) {
+								this.map[r][c] = 1;
+							}
+						}
+					}
+					else if(dr[i] == -1) {	//up
+						for(int c = oc - connectorSize / 2; c < oc + connectorSize / 2; c++) {
+							for(int r = or; r > or - tileSize; r--) {
+								this.map[r][c] = 1;
+							}
+						}
+					}
+					else if(dr[i] == 1) {	//down
+						for(int c = oc - connectorSize / 2; c < oc + connectorSize / 2; c++) {
+							for(int r = or; r < or + tileSize; r++) {
+								this.map[r][c] = 1;
+							}
+						}
+					}
+					break;
 				}
 			}
 		}
@@ -244,8 +325,8 @@ public class Map {
 			for(int j = 0; j < this.mapSize; j++) {
 				if(this.map[i][j] == 1 && !v[i][j]) {
 					
-					int ox = i * GameManager.tileSize;
-					int oy = j * GameManager.tileSize;
+					int ox = j * GameManager.tileSize;
+					int oy = i * GameManager.tileSize;
 					
 					boolean canPlaceLarge = true;
 					if(i + 1 == this.mapSize || j + 1 == this.mapSize) {
