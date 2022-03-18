@@ -80,10 +80,6 @@ public class MenuState extends State{
 		}
 		
 		switch(which) {
-		case "button1":
-			im.setVal("slider1", 50);
-			im.setVal("slider2", 75);
-			break;
 		}
 		
 	}

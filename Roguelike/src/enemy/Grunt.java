@@ -4,6 +4,7 @@ import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
+import item.Coin;
 import map.Map;
 import projectile.MagicBallSmall;
 import state.GameManager;
@@ -33,6 +34,9 @@ public class Grunt extends Enemy {
 	public int maxMoveFrames = 180;
 	public int minMoveFrames = 60;
 	
+	//only need to update on state transitions
+	public boolean facingLeft = false;	//if true, then we need to vertically mirror drawn sprites
+	
 	public int frameCounter = 0;
 	public int frameInterval = 10;
 	
@@ -43,7 +47,7 @@ public class Grunt extends Enemy {
 	public double projectileVel = 0.15;
 	
 	public Grunt(Vector pos) {
-		super(pos, 0.6, 0.6);
+		super(pos, 0.6, 0.6, 5);
 	}
 	
 	public static void loadTextures() {
@@ -100,6 +104,7 @@ public class Grunt extends Enemy {
 	public void changeToAttackState() {
 		this.state = Grunt.ATTACK_STATE;
 		frameCounter = 0;
+		this.facingLeft = this.pos.x > GameManager.player.pos.x;
 	}
 	
 	public void changeToIdleState() {
@@ -119,19 +124,27 @@ public class Grunt extends Enemy {
 		this.moveVel = new Vector(gruntToPlayer);
 		
 		this.moveFrames = (int) (Math.random() * (this.maxMoveFrames - this.minMoveFrames)) + this.minMoveFrames; 
+		
+		this.facingLeft = this.moveVel.x < 0;
 	}
 
 	@Override
 	public void draw(Graphics g) {	
+		BufferedImage nextSprite = null;
 		if(this.state == Grunt.IDLE_STATE) {
-			this.drawCenteredSprite(Grunt.spriteIdle.get(frameCounter / frameInterval), g);
+			nextSprite = Grunt.spriteIdle.get(frameCounter / frameInterval);
 		}
 		else if(this.state == Grunt.MOVE_STATE) {
-			this.drawCenteredSprite(Grunt.spriteMove.get(frameCounter / frameInterval), g);
+			nextSprite = Grunt.spriteMove.get(frameCounter / frameInterval);
 		}
 		else if(this.state == Grunt.ATTACK_STATE) {
-			this.drawCenteredSprite(Grunt.spriteAttack.get(frameCounter / frameInterval), g);
+			nextSprite = Grunt.spriteAttack.get(frameCounter / frameInterval);
 		}
+		
+		if(this.facingLeft) {
+			nextSprite = GraphicsTools.flipImageHorizontal(nextSprite);
+		}
+		this.drawCenteredSprite(nextSprite, g);
 		
 		frameCounter ++;
 		
@@ -151,6 +164,11 @@ public class Grunt extends Enemy {
 				frameCounter = 0;
 			}
 		}
+	}
+
+	@Override
+	public void onDeath() {
+		GameManager.items.add(new Coin(this.pos));
 	}
 	
 }

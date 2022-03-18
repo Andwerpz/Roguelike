@@ -26,6 +26,9 @@ public class Vector extends util.Point{
 	
 	public void normalize() {
 		double mag = this.getMagnitude();
+		if(mag == 0) {
+			return;
+		}
 		this.x /= mag;
 		this.y /= mag;
 	}

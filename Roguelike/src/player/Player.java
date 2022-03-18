@@ -13,6 +13,7 @@ import entity.Hitbox;
 import map.Map;
 import projectile.LaserRed;
 import projectile.LongBullet;
+import projectile.Projectile;
 import main.Main;
 import main.MainPanel;
 import state.GameManager;
@@ -273,6 +274,18 @@ public class Player extends Entity{
 		this.equippedWeapon.pos.addVector(new Vector(0, 0.35));	//move down so that the wep isn't in front of player's head
 		
 		this.equippedWeapon.drawPointAtSprite(wepImg, g, attackVector);
+	}
+	
+	public boolean takeDamage(Projectile p) {
+		if(!p.playerProjectile && this.collision(p)) {
+			this.health -= p.damage;
+			
+			Vector projectileVel = new Vector(p.vel);
+			projectileVel.setMagnitude(0.2);
+			this.vel.addVector(projectileVel);
+			return true;
+		}
+		return false;
 	}
 	
 	/*

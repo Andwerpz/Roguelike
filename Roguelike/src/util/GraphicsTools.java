@@ -69,7 +69,7 @@ public class GraphicsTools {
 		return rotated;
 	}
 
-	// flips image vertically
+	// flips image vertically (along x axis)
 	public static BufferedImage flipImageVertical(BufferedImage image) {
 		AffineTransform at = new AffineTransform();
 		at.concatenate(AffineTransform.getScaleInstance(1, -1));
@@ -84,7 +84,7 @@ public class GraphicsTools {
 		return newImage;
 	}
 
-	// flips image horizontally
+	// flips image horizontally (along y axis)
 	public static BufferedImage flipImageHorizontal(BufferedImage image) {
 		AffineTransform at = new AffineTransform();
 		at.concatenate(AffineTransform.getScaleInstance(-1, 1));

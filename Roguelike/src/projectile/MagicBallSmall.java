@@ -47,7 +47,7 @@ public class MagicBallSmall extends Projectile {
 	}
 
 	@Override
-	public void despawn() {
+	public void onDeath() {
 		
 	}
 

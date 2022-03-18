@@ -21,7 +21,7 @@ public class LaserRed extends Projectile{
 	}
 
 	@Override
-	public void despawn() {
+	public void onDeath() {
 		// TODO Auto-generated method stub
 		
 	}

@@ -34,12 +34,11 @@ public class GamePanel {
 		GameManager.particles = new ArrayList<>();
 		GameManager.projectiles = new ArrayList<>();
 		
-		GameManager.enemies.add(new Grunt(new Vector(15, 20)));
 	}
 	
 	public void tick() {
-		if(GameManager.items.size() != 10) {
-			GameManager.items.add(new Coin(new Vector(30, 30)));
+		if(GameManager.enemies.size() <= 10) {
+			GameManager.enemies.add(new Grunt(new Vector(30, 30)));
 		}
 		
 		GameManager.player.tick(map);
@@ -68,21 +67,34 @@ public class GamePanel {
 			}
 		}
 		
-		for(Enemy e : GameManager.enemies) {
+		for(int index = GameManager.enemies.size() - 1; index >= 0; index --) {
+			Enemy e = GameManager.enemies.get(index);
 			e.tick(map);
+			if(e.health <= 0) {
+				e.despawn();
+			}
 		}
 		
 		for(Particle p : GameManager.particles) {
 			p.tick(map);
 		}
 		
-		for(int index = 0; index < GameManager.projectiles.size(); index++) {
+		for(int index = GameManager.projectiles.size() - 1; index >= 0; index --) {
 			Projectile p = GameManager.projectiles.get(index);
 			p.tick(map);
 			if(p.envCollision) {
 				p.despawn();
-				GameManager.projectiles.remove(p);
-				index --;
+				continue;
+			}
+			else if(GameManager.player.takeDamage(p)) {
+				p.despawn();
+				continue;
+			}
+			for(Enemy e : GameManager.enemies) {
+				if(e.takeDamage(p)) {
+					p.despawn();
+					break;
+				}
 			}
 		}
 		
@@ -93,33 +105,47 @@ public class GamePanel {
 		this.map.drawFloor(g);
 		
 		//draw shadows first
-		for(Item i : GameManager.items) {
+		for(int index = GameManager.items.size() - 1; index >= 0; index--) {
+			if(index >= GameManager.items.size()) {
+				continue;
+			}
+			Item i = GameManager.items.get(index);
 			i.drawShadow(g);
 		}
-		for(Enemy e : GameManager.enemies) {
+		for(int index = GameManager.enemies.size() - 1; index >= 0; index --) {
+			if(index >= GameManager.enemies.size()) {
+				continue;
+			}
+			Enemy e = GameManager.enemies.get(index);
 			e.drawShadow(g);
 		}
-//		for(Particle p : GameManager.particles) {
-//			p.drawShadow(g);
-//		}
-//		for(Projectile p : GameManager.projectiles) {
-//			p.drawShadow(g);
-//		}
 		GameManager.player.drawShadow(g);
 		
 		this.map.drawWalls(g);
 		
 		//draw sprites
-		for(Item i : GameManager.items) {
+		for(int index = GameManager.items.size() - 1; index >= 0; index--) {
+			if(index >= GameManager.items.size()) {
+				continue;
+			}
+			Item i = GameManager.items.get(index);
 			i.draw(g);
 		}
-		for(Enemy e : GameManager.enemies) {
+		for(int index = GameManager.enemies.size() - 1; index >= 0; index --) {
+			if(index >= GameManager.enemies.size()) {
+				continue;
+			}
+			Enemy e = GameManager.enemies.get(index);
 			e.draw(g);
 		}
 		for(Particle p : GameManager.particles) {
 			p.draw(g);
 		}
-		for(Projectile p : GameManager.projectiles) {
+		for(int index = GameManager.projectiles.size() - 1; index >= 0; index--) {
+			if(index >= GameManager.projectiles.size()) {
+				continue;
+			}
+			Projectile p = GameManager.projectiles.get(index);
 			p.draw(g);
 		}
 		GameManager.player.draw(g);

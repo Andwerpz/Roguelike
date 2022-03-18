@@ -200,8 +200,6 @@ public abstract class Entity {
 		
 		//friction
 		this.vel.multiply(1d - this.friction);
-		//this.vel.setMagnitude(Math.min(maxSpeed, this.vel.getMagnitude()));
-		
 		
 		//movement collision checks
 		

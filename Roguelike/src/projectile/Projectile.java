@@ -6,6 +6,7 @@ import java.util.ArrayList;
 
 import entity.Entity;
 import map.Map;
+import state.GameManager;
 import util.Point;
 import util.Vector;
 
@@ -15,6 +16,8 @@ public abstract class Projectile extends Entity{
 	public int damage;
 	public int frameInterval;
 	public int frameCounter = 0;
+	
+	public boolean playerProjectile = false;	//true if projectile fired by player
 	
 	public Projectile(Vector pos, Vector vel, double width, double height, int damage, ArrayList<BufferedImage> sprite, int frameInterval) {
 		super(pos, vel, width, height);
@@ -51,6 +54,11 @@ public abstract class Projectile extends Entity{
 		this.drawPointAtSprite(this.sprite.get(frameCounter / frameInterval), g, this.vel);
 	}
 	
-	public abstract void despawn();
+	public abstract void onDeath();
+	
+	public void despawn() {
+		this.onDeath();
+		GameManager.projectiles.remove(this);
+	}
 
 }

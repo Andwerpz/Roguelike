@@ -86,6 +86,8 @@ public class MainPanel extends JPanel implements Runnable, KeyListener, MouseLis
 	
 	public void tick() {
 		
+		repaint();
+		
 		java.awt.Point mouse2 = MouseInfo.getPointerInfo().getLocation();
 		
 		mouse.setLocation(mouse2.x, mouse2.y);
@@ -95,7 +97,7 @@ public class MainPanel extends JPanel implements Runnable, KeyListener, MouseLis
 		
 		gsm.tick(mouse);
 		
-		repaint();
+		
 		
 	}
 	
