@@ -1,26 +1,26 @@
 package enemy;
 
 import java.awt.Graphics;
+import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 
 import entity.Entity;
 import map.Map;
+import util.Vector;
 
-public class Enemy extends Entity{
+public abstract class Enemy extends Entity{
 	
-	public Enemy() {
-		
+	public ArrayList<BufferedImage> sprite;
+	
+	public Enemy(Vector pos, double width, double height) {
+		super(pos, new Vector(0, 0), width, height);
 	}
-
-	@Override
-	public void tick(Map map) {
-		// TODO Auto-generated method stub
-		
+	
+	public static void loadTextures() {
+		Grunt.loadTextures();
 	}
-
-	@Override
-	public void draw(Graphics g) {
-		// TODO Auto-generated method stub
-		
-	}
+	
+	public abstract void tick(Map map);	//should invoke move() method
+	public abstract void draw(Graphics g);
 
 }

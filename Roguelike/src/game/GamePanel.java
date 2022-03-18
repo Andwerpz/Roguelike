@@ -18,6 +18,7 @@ import main.MainPanel;
 import java.util.ArrayList;
 
 import enemy.Enemy;
+import enemy.Grunt;
 
 public class GamePanel {
 	
@@ -33,6 +34,7 @@ public class GamePanel {
 		GameManager.particles = new ArrayList<>();
 		GameManager.projectiles = new ArrayList<>();
 		
+		GameManager.enemies.add(new Grunt(new Vector(15, 20)));
 	}
 	
 	public void tick() {

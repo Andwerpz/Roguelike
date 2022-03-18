@@ -19,6 +19,8 @@ import state.GameManager;
 import util.GraphicsTools;
 import util.Point;
 import util.Vector;
+import weapon.AK47;
+import weapon.M1911;
 import weapon.PumpShotgun;
 import weapon.Weapon;
 
@@ -63,7 +65,7 @@ public class Player extends Entity{
 	public boolean leftAttack = false;
 	public boolean rightAttack = false;
 	
-	public Weapon equippedWeapon = new PumpShotgun(new Vector(0, 0));
+	public Weapon equippedWeapon = new M1911(new Vector(0, 0));
 	public boolean pickUpWeapon = false;
 	
 	//public Weapon equippedWeapon = new AK47(new Vector(0, 0));
@@ -176,12 +178,6 @@ public class Player extends Entity{
 		}
 	}
 	
-	public void handleAnimation() {
-		
-		
-		
-	}
-	
 	/*
 	public void attack() {
 		//equipped a gun
@@ -261,7 +257,7 @@ public class Player extends Entity{
 		
 		
 		//draw the currently equipped weapon
-		BufferedImage wepImg = PumpShotgun.sprite;
+		BufferedImage wepImg = this.equippedWeapon.sprite;
 		
 		Vector attackVector = new Vector(new Point(GameManager.player.pos), Entity.convertPointToReal(new Point(GameManager.mouse.x, GameManager.mouse.y)));
 		attackVector.setMagnitude(0.5);
@@ -273,7 +269,7 @@ public class Player extends Entity{
 		}
 		
 		this.equippedWeapon.pos = new Vector(GameManager.player.pos);
-		this.equippedWeapon.pos.addVector(attackVector);
+		this.equippedWeapon.pos.addVector(attackVector);	//move wep in direction of mouse
 		this.equippedWeapon.pos.addVector(new Vector(0, 0.35));	//move down so that the wep isn't in front of player's head
 		
 		this.equippedWeapon.drawPointAtSprite(wepImg, g, attackVector);
@@ -291,8 +287,6 @@ public class Player extends Entity{
 	
 	public void mousePressed(MouseEvent arg0) {	
 		this.mouseAttack = true;
-		//this.attack(new Point(mouse.x, mouse.y));
-		
 		this.equippedWeapon.attack();
 	}
 	
@@ -301,7 +295,6 @@ public class Player extends Entity{
 	}
 	
 	public void keyPressed(int k) {
-		
 		if(k == KeyEvent.VK_A) {
 			left = true;
 		}

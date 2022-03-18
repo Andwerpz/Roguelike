@@ -35,6 +35,7 @@ public abstract class Projectile extends Entity{
 	public static void loadTextures() {
 		LongBullet.loadTextures();
 		LaserRed.loadTextures();
+		MagicBallSmall.loadTextures();
 	}
 	
 	public void tick(Map map) {

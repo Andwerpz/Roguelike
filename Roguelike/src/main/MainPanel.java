@@ -66,7 +66,6 @@ public class MainPanel extends JPanel implements Runnable, KeyListener, MouseLis
 			start = System.nanoTime();
 			
 			tick();
-			repaint();
 			
 			elapsed = System.nanoTime() - start;
 			wait = targetTime - elapsed / 1000000;
@@ -95,6 +94,8 @@ public class MainPanel extends JPanel implements Runnable, KeyListener, MouseLis
 		mouse.setLocation(mouse.x - (mouse2.x - mouse.x), mouse.y - (mouse2.y - mouse.y));
 		
 		gsm.tick(mouse);
+		
+		repaint();
 		
 	}
 	

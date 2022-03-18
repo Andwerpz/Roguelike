@@ -83,6 +83,17 @@ public abstract class Entity {
 		g2.setComposite(GraphicsTools.makeComposite(1));
 	}
 	
+	//draws sprite so that the center of the sprite is aligned to the center of the hitbox
+	public void drawCenteredSprite(BufferedImage sprite, Graphics g) {
+		double width = (double) sprite.getWidth() / (double) (GameManager.tileSize / GameManager.pixelSize);
+		double height = (double) sprite.getHeight() / (double) (GameManager.tileSize / GameManager.pixelSize);
+		g.drawImage(sprite, 
+				(int) ((this.pos.x - width / 2) * GameManager.tileSize - GameManager.cameraOffset.x), 
+				(int) ((this.pos.y - height / 2) * GameManager.tileSize - GameManager.cameraOffset.y), 
+				(int) (width * GameManager.tileSize), 
+				(int) (height * GameManager.tileSize), null);
+	}
+	
 	//draws the sprite so that the bottom of the sprite is aligned to the bottom of the env hitbox
 	public void drawSprite(BufferedImage sprite, Graphics g) {
 		double width = (double) sprite.getWidth() / (double) (GameManager.tileSize / GameManager.pixelSize);
