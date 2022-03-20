@@ -51,6 +51,13 @@ public abstract class Enemy extends Entity{
 		this.drawCenteredSprite(curSprite, g);
 	}
 	
+	public void incrementFrameCounter() {
+		this.frameCounter ++;
+		if(frameCounter / frameInterval >= this.sprites.get(this.state).size()) {
+			this.frameCounter = 0;
+		}
+	}
+	
 	public boolean takeDamage(Projectile p) {
 		if(p.playerProjectile && this.collision(p)) {
 			this.health -= p.damage;

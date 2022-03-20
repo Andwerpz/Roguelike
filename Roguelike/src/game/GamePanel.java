@@ -38,7 +38,7 @@ public class GamePanel {
 	}
 	
 	public void tick() {
-		if(GameManager.enemies.size() <= 10) {
+		if(GameManager.enemies.size() <= 0) {
 			GameManager.enemies.add(new DarkKnight(new Vector(30, 30)));
 		}
 		
@@ -98,7 +98,6 @@ public class GamePanel {
 				}
 			}
 		}
-		
 	}
 	
 	public void draw(Graphics g) {

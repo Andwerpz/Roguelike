@@ -16,12 +16,12 @@ public class Coin extends Item {
 	
 	public static ArrayList<BufferedImage> animation;
 	public static int frameInterval = 8;
-	public int animationFrame;
+	public int frameCounter;
 	
 	public Coin(Vector pos) {
 		super(new Vector(pos.x, pos.y), new Vector((Math.random() - 0.5) * 0.7, -(Math.random() - 0.5) * 0.7), 0.5, 0.5);
 		
-		this.animationFrame = 0;
+		this.frameCounter = (int) (Math.random() * (animation.size() * frameInterval));
 		
 		this.autoPickup = true;
 		this.purchaseable = false;
@@ -29,9 +29,9 @@ public class Coin extends Item {
 
 	@Override
 	public void tick(Map map) {
-		this.animationFrame ++;
-		if(this.animationFrame / Coin.frameInterval >= Coin.animation.size()) {
-			this.animationFrame = 0;
+		this.frameCounter ++;
+		if(this.frameCounter / Coin.frameInterval >= Coin.animation.size()) {
+			this.frameCounter = 0;
 		}
 		
 		if(this.outOfBounds(map)) {
@@ -57,7 +57,7 @@ public class Coin extends Item {
 
 	@Override
 	public void draw(Graphics g) {
-		this.drawSprite(animation.get(animationFrame / Coin.frameInterval), g);
+		this.drawSprite(animation.get(frameCounter / Coin.frameInterval), g);
 	}
 
 	@Override

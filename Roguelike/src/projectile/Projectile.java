@@ -12,6 +12,10 @@ import util.Vector;
 
 public abstract class Projectile extends Entity{
 	
+	//usually for projectiles, there is no state change, so to make it easier, 
+	//you just have to pass a pointer from the static sprite animation back to the parent
+	//projectile class to draw.
+	
 	public ArrayList<BufferedImage> sprite;
 	public int damage;
 	public int frameInterval;
@@ -39,6 +43,7 @@ public abstract class Projectile extends Entity{
 		LongBullet.loadTextures();
 		LaserRed.loadTextures();
 		MagicBallSmall.loadTextures();
+		MagicBallPointed.loadTextures();
 	}
 	
 	public void tick(Map map) {

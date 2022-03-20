@@ -4,6 +4,7 @@ import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
+import map.Map;
 import util.GraphicsTools;
 import util.Vector;
 
@@ -31,18 +32,30 @@ public class MagicBallSmall extends Projectile {
 		MagicBallSmall.spriteFormation = GraphicsTools.loadAnimation("/magic_ball_small_formation.png", 10, 10);
 	}
 	
+	@Override
+	public void tick(Map map) {
+		this.move(map);
+		
+		frameCounter ++;
+		if(!this.formed) {
+			if(frameCounter / formationFrameInterval >= MagicBallSmall.spriteFormation.size()) {
+				formed = true;
+				frameCounter = -1;
+				this.vel = savedVel;
+			}
+		}
+		else {
+			//no need to reset frame counter since we always sample the first frame
+		}
+	}
+	
+	@Override
 	public void draw(Graphics g) {
 		if(formed) {
 			this.drawRotatedSprite(MagicBallSmall.sprite.get(0), g, Math.toRadians(degPerFrame * frameCounter));
 		}
 		else {
 			this.drawCenteredSprite(MagicBallSmall.spriteFormation.get(frameCounter / formationFrameInterval), g);
-		}
-		frameCounter ++;
-		if(frameCounter / formationFrameInterval >= MagicBallSmall.spriteFormation.size()) {
-			formed = true;
-			frameCounter = -1;
-			this.vel = savedVel;
 		}
 	}
 
