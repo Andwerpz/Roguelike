@@ -20,10 +20,4 @@ public class LaserRed extends Projectile{
 		LaserRed.sprite = GraphicsTools.loadAnimation("/laser_red.png", 26, 5);
 	}
 
-	@Override
-	public void onDeath() {
-		// TODO Auto-generated method stub
-		
-	}
-
 }

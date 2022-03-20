@@ -19,12 +19,14 @@ public class MagicBallSmall extends Projectile {
 	public boolean formed = false;
 	public int formationFrameInterval = 6;
 	
-	public int degPerFrame = 5;
+	public double degPerFrame = 5;
+	public double rotationRate;
 	public int frameCounter = 0;
 
 	public MagicBallSmall(Vector pos, Vector vel, int damage) {
 		super(pos, new Vector(0, 0), 0.25, 0.25, damage, MagicBallSmall.sprite);
 		savedVel = vel;
+		this.rotationRate = (Math.random() - 0.5) * 2;
 	}
 	
 	public static void loadTextures() {
@@ -52,16 +54,11 @@ public class MagicBallSmall extends Projectile {
 	@Override
 	public void draw(Graphics g) {
 		if(formed) {
-			this.drawRotatedSprite(MagicBallSmall.sprite.get(0), g, Math.toRadians(degPerFrame * frameCounter));
+			this.drawRotatedSprite(MagicBallSmall.sprite.get(0), g, Math.toRadians(degPerFrame * frameCounter * rotationRate));
 		}
 		else {
 			this.drawCenteredSprite(MagicBallSmall.spriteFormation.get(frameCounter / formationFrameInterval), g);
 		}
-	}
-
-	@Override
-	public void onDeath() {
-		
 	}
 
 }

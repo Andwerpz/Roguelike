@@ -1,5 +1,12 @@
-/enemy/
-/game/
-/item/
+/projectile_explosion_medium.png
+/projectile_explosion_particle.png
+/map/
+/particle/
+/player/
 /projectile/
-/magic_ball_pointed.png
+/shapes/
+/state/
+/util/
+/weapon/
+/entity/
+/game/

@@ -40,6 +40,7 @@ public class GameManager {
 		Item.loadTextures();
 		Projectile.loadTextures();
 		Enemy.loadTextures();
+		Particle.loadTextures();
 		
 		states = new Stack<State>();
 		states.push(new GameState(this));

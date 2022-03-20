@@ -6,6 +6,7 @@ import java.util.ArrayList;
 
 import entity.Entity;
 import map.Map;
+import particle.ProjectileExplosionMedium;
 import state.GameManager;
 import util.Point;
 import util.Vector;
@@ -59,7 +60,11 @@ public abstract class Projectile extends Entity{
 		this.drawPointAtSprite(this.sprite.get(frameCounter / frameInterval), g, this.vel);
 	}
 	
-	public abstract void onDeath();
+	public void onDeath() {
+		if(!this.playerProjectile) {	//enemy fired projectiles will usually be red
+			GameManager.particles.add(new ProjectileExplosionMedium(this.pos));
+		}
+	}
 	
 	public void despawn() {
 		this.onDeath();

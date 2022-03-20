@@ -18,9 +18,4 @@ public class MagicBallPointed extends Projectile{
 		MagicBallPointed.sprite = GraphicsTools.loadAnimation("/magic_ball_pointed.png", 19, 9);
 	}
 
-	@Override
-	public void onDeath() {
-		// TODO Auto-generated method stub
-	}
-
 }

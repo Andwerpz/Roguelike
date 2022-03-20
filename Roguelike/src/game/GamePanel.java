@@ -76,7 +76,8 @@ public class GamePanel {
 			}
 		}
 		
-		for(Particle p : GameManager.particles) {
+		for(int index = GameManager.particles.size() - 1; index >= 0; index --) {
+			Particle p = GameManager.particles.get(index);
 			p.tick(map);
 		}
 		
@@ -138,7 +139,11 @@ public class GamePanel {
 			Enemy e = GameManager.enemies.get(index);
 			e.draw(g);
 		}
-		for(Particle p : GameManager.particles) {
+		for(int index = GameManager.particles.size() - 1; index >= 0; index --) {
+			if(index >= GameManager.particles.size()) {
+				continue;
+			}
+			Particle p = GameManager.particles.get(index);
 			p.draw(g);
 		}
 		for(int index = GameManager.projectiles.size() - 1; index >= 0; index--) {

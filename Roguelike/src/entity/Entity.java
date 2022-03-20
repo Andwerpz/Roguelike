@@ -31,6 +31,7 @@ public abstract class Entity {
 	
 	public double friction = 0.25;	//how much speed is leaked between frames.
 	
+	public boolean doCollision = true;	//if false, this entity will phase through walls
 	public boolean envCollision = false;	//is true if entity collided with environment on the last tick
 	
 	public Entity() {
@@ -201,8 +202,12 @@ public abstract class Entity {
 		//friction
 		this.vel.multiply(1d - this.friction);
 		
-		//movement collision checks
+		if(!doCollision) {	//no collision for this entity
+			this.pos.addVector(this.vel);
+			return;
+		}
 		
+		//movement collision checks
 		//leftward movement
 		if(this.vel.x < 0) {
 			Point lowerLeft = new Point(envHitbox.lowerLeft);
