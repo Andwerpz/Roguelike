@@ -1,16 +1,2 @@
-/projectile/
-/laser_red.png
-/player/
-/game/
-/weapon/
-/entity/
-/state/
-/item/
-/grunt_attack.png
-/magic_ball_small.png
 /enemy/
-/magic_ball_small_formation.png
-/grunt_idle.png
-/main/
-/grunt_move.png
-/util/
+/game/

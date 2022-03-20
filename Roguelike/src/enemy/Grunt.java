@@ -13,7 +13,7 @@ import util.Vector;
 
 public class Grunt extends Enemy {
 	
-	//small, slow moving enemy that spawns in projectiles to attack player
+	//small, slow moving enemy that spawns in slow projectiles to attack player
 	
 	//Default state is idle. When in idle, has 1% chance per frame to start attack, or move animation 
 	
@@ -34,20 +34,16 @@ public class Grunt extends Enemy {
 	public int maxMoveFrames = 180;
 	public int minMoveFrames = 60;
 	
-	//only need to update on state transitions
-	public boolean facingLeft = false;	//if true, then we need to vertically mirror drawn sprites
-	
-	public int frameCounter = 0;
-	public int frameInterval = 10;
-	
-	public int state = Grunt.IDLE_STATE;
-	
 	public int numProjectiles = 4;
 	public double projectilePosSpread = 1.5;
-	public double projectileVel = 0.15;
+	public double projectileVel = 0.1;
 	
 	public Grunt(Vector pos) {
 		super(pos, 0.6, 0.6, 5);
+		this.state = Grunt.IDLE_STATE;
+		this.sprites.put(Grunt.IDLE_STATE, spriteIdle);
+		this.sprites.put(Grunt.ATTACK_STATE, spriteAttack);
+		this.sprites.put(Grunt.MOVE_STATE, spriteMove);
 	}
 	
 	public static void loadTextures() {
@@ -59,62 +55,72 @@ public class Grunt extends Enemy {
 	@Override
 	public void tick(Map map) {
 		
-		//spawn projectiles if in attack state
-		if(this.state == Grunt.ATTACK_STATE && frameCounter % frameInterval == 0 && frameCounter / frameInterval == 3) {
-			Vector gruntToPlayer = new Vector(this.pos, GameManager.player.pos);
-			gruntToPlayer.setMagnitude(this.projectileVel);
-			
-			for(int i = 0; i < this.numProjectiles; i++) {
-				Vector offset = new Vector((Math.random() - 0.5) * projectilePosSpread, (Math.random() - 0.5) * projectilePosSpread);
-				Vector projectilePos = new Vector(this.pos);
-				projectilePos.addVector(offset);
-				
-				Vector projectileVel = new Vector(gruntToPlayer);
-				
-				GameManager.projectiles.add(new MagicBallSmall(projectilePos, projectileVel, 1));
+		this.move(map);
+		this.frameCounter ++;
+		
+		if(this.state == Grunt.IDLE_STATE) {
+			if(Math.random() <= 0.01) {
+				this.changeToAttack();
+			}
+			else if(Math.random() <= 0.01) {
+				this.changeToMove();
+			}
+			if(frameCounter / frameInterval >= Grunt.spriteIdle.size()) {
+				frameCounter = 0;
 			}
 		}
 		
-		this.move(map);
-		
-		if(this.state == Grunt.MOVE_STATE) {
+		else if(this.state == Grunt.MOVE_STATE) {
 			this.moveFrames --;
 			this.vel = new Vector(this.moveVel);
 			
 			if(this.moveFrames == 0) {
-				this.changeToIdleState();
+				this.changeToIdle();
 			}
 			else if(this.envCollision) {
-				this.changeToIdleState();
+				this.changeToIdle();
+			}
+			if(frameCounter / frameInterval >= Grunt.spriteMove.size()) {
+				frameCounter = 0;
 			}
 		}
 		
-		//determine which state to go to next
-		if(this.state == Grunt.IDLE_STATE) {
-			if(Math.random() <= 0.01) {
-				this.changeToAttackState();
+		else if(this.state == Grunt.ATTACK_STATE) {
+			if(frameCounter % frameInterval == 0 && frameCounter / frameInterval == 3) {
+				//spawn new projectiles to attack player
+				Vector gruntToPlayer = new Vector(this.pos, GameManager.player.pos);
+				gruntToPlayer.setMagnitude(this.projectileVel);
+				
+				for(int i = 0; i < this.numProjectiles; i++) {
+					Vector offset = new Vector((Math.random() - 0.5) * projectilePosSpread, (Math.random() - 0.5) * projectilePosSpread);
+					Vector projectilePos = new Vector(this.pos);
+					projectilePos.addVector(offset);
+					
+					Vector projectileVel = new Vector(gruntToPlayer);
+					
+					GameManager.projectiles.add(new MagicBallSmall(projectilePos, projectileVel, 1));
+				}
 			}
-			
-			else if(Math.random() <= 0.01) {
-				this.changeToMoveState();
+			else if(frameCounter / frameInterval >= Grunt.spriteAttack.size()) {
+				this.changeToIdle();
 			}
 		}
 	}
 	
-	public void changeToAttackState() {
+	public void changeToAttack() {
 		this.state = Grunt.ATTACK_STATE;
 		frameCounter = 0;
 		this.facingLeft = this.pos.x > GameManager.player.pos.x;
 	}
 	
-	public void changeToIdleState() {
+	public void changeToIdle() {
 		this.state = Grunt.IDLE_STATE;
 		frameCounter = 0;
 		
 		this.vel = new Vector(0, 0);
 	}
 	
-	public void changeToMoveState() {
+	public void changeToMove() {
 		this.state = Grunt.MOVE_STATE;
 		frameCounter = 0;
 		
@@ -126,44 +132,6 @@ public class Grunt extends Enemy {
 		this.moveFrames = (int) (Math.random() * (this.maxMoveFrames - this.minMoveFrames)) + this.minMoveFrames; 
 		
 		this.facingLeft = this.moveVel.x < 0;
-	}
-
-	@Override
-	public void draw(Graphics g) {	
-		BufferedImage nextSprite = null;
-		if(this.state == Grunt.IDLE_STATE) {
-			nextSprite = Grunt.spriteIdle.get(frameCounter / frameInterval);
-		}
-		else if(this.state == Grunt.MOVE_STATE) {
-			nextSprite = Grunt.spriteMove.get(frameCounter / frameInterval);
-		}
-		else if(this.state == Grunt.ATTACK_STATE) {
-			nextSprite = Grunt.spriteAttack.get(frameCounter / frameInterval);
-		}
-		
-		if(this.facingLeft) {
-			nextSprite = GraphicsTools.flipImageHorizontal(nextSprite);
-		}
-		this.drawCenteredSprite(nextSprite, g);
-		
-		frameCounter ++;
-		
-		if(this.state == Grunt.IDLE_STATE) {
-			if(frameCounter / frameInterval >= Grunt.spriteIdle.size()) {
-				frameCounter = 0;
-			}
-		}
-		else if(this.state == Grunt.MOVE_STATE) {
-			if(frameCounter / frameInterval >= Grunt.spriteMove.size()) {
-				frameCounter = 0;
-			}
-		}
-		else if(this.state == Grunt.ATTACK_STATE) {	//finished attack
-			if(frameCounter / frameInterval >= Grunt.spriteAttack.size()) {
-				this.state = Grunt.IDLE_STATE;
-				frameCounter = 0;
-			}
-		}
 	}
 
 	@Override

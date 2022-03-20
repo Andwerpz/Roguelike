@@ -17,6 +17,7 @@ import main.MainPanel;
 
 import java.util.ArrayList;
 
+import enemy.DarkKnight;
 import enemy.Enemy;
 import enemy.Grunt;
 
@@ -38,7 +39,7 @@ public class GamePanel {
 	
 	public void tick() {
 		if(GameManager.enemies.size() <= 10) {
-			GameManager.enemies.add(new Grunt(new Vector(30, 30)));
+			GameManager.enemies.add(new DarkKnight(new Vector(30, 30)));
 		}
 		
 		GameManager.player.tick(map);
