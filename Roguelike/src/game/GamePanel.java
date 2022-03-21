@@ -181,10 +181,6 @@ public class GamePanel {
 		}
 		GameManager.player.draw(g);
 		
-		
-		for(EnemyEncounter e : map.enemyEncounters) {
-			e.draw(g);
-		}
 	}
 	
 	public void mousePressed(MouseEvent arg0) {

@@ -44,7 +44,7 @@ public class DamageNumber extends Particle {
 	public static void loadTextures() {
 		InputStream is;
 		try {
-			is = GraphicsTools.class.getResourceAsStream("/PressStart2P.ttf");
+			is = GraphicsTools.class.getResourceAsStream("/fonts/PressStart2P.ttf");
 			DamageNumber.font = Font.createFont(Font.TRUETYPE_FONT, is);
 			DamageNumber.font = DamageNumber.font.deriveFont((float) fontSize);
 		} catch (FontFormatException e) {
