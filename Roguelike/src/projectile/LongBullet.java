@@ -20,11 +20,4 @@ public class LongBullet extends Projectile {
 	public static void loadTextures() {
 		LongBullet.sprite = GraphicsTools.loadAnimation("/long_bullet.png", 26, 5);
 	}
-	
-	@Override
-	public void onDeath() {
-		// TODO Auto-generated method stub
-		
-	}	
-	
 }

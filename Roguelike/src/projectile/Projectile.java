@@ -6,6 +6,7 @@ import java.util.ArrayList;
 
 import entity.Entity;
 import map.Map;
+import particle.Particle;
 import particle.ProjectileExplosionMedium;
 import state.GameManager;
 import util.Point;
@@ -62,7 +63,10 @@ public abstract class Projectile extends Entity{
 	
 	public void onDeath() {
 		if(!this.playerProjectile) {	//enemy fired projectiles will usually be red
-			GameManager.particles.add(new ProjectileExplosionMedium(this.pos));
+			GameManager.particles.add(new ProjectileExplosionMedium(this.pos, Particle.RED));
+		}
+		else if(this.playerProjectile) {
+			GameManager.particles.add(new ProjectileExplosionMedium(this.pos, Particle.YELLOW));
 		}
 	}
 	

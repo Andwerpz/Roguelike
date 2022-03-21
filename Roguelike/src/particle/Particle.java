@@ -11,6 +11,9 @@ import util.Vector;
 
 public abstract class Particle extends Entity{
 	
+	public static int RED = 0;
+	public static int YELLOW = 1;
+	
 	public ArrayList<BufferedImage> sprite;
 	public int frameCounter = 0;
 	public int frameInterval = 6;

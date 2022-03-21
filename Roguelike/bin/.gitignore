@@ -14,3 +14,22 @@
 /enemy/
 /item/
 /PressStart2P.ttf
+/main/
+/coin_rotate.png
+/dark_knight_idle.png
+/dark_knight_move.png
+/grunt_attack.png
+/grunt_idle.png
+/grunt_move.png
+/knight_idle.png
+/knight_run.png
+/laser_red.png
+/long_bullet.png
+/magic_ball_pointed.png
+/magic_ball_small.png
+/magic_ball_small_formation.png
+/weapon sprites.png
+/projectile_explosion_medium_red.png
+/projectile_explosion_medium_yellow.png
+/projectile_explosion_particle_red.png
+/projectile_explosion_particle_yellow.png
