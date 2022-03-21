@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Stack;
 
 import enemy.Enemy;
+import entity.Entity;
 import item.Item;
 import particle.Particle;
 import player.Player;
@@ -36,6 +37,7 @@ public class GameManager {
 	
 	public GameManager() {
 		
+		Entity.init();
 		Player.loadTextures();
 		Item.loadTextures();
 		Projectile.loadTextures();

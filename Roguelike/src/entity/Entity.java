@@ -5,7 +5,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
-
+import java.util.HashSet;
 
 import main.MainPanel;
 import map.Map;
@@ -15,6 +15,7 @@ import util.Point;
 import util.Vector;
 
 public abstract class Entity {
+	public static HashSet<Integer> wallTiles = new HashSet<>();	//which tiles in the map should register for env collision
 	
 	public Hitbox envHitbox;	//the environment hitbox is going to just be 1 rectangle. Multiple rectangles are too tedious, and not worth the debugging
 	
@@ -46,6 +47,10 @@ public abstract class Entity {
 		this.width = width;
 		this.height = height;
 		this.envHitbox = new Hitbox(width, height);
+	}
+	
+	public static void init() {
+		Entity.wallTiles.add(0);
 	}
 	
 	public abstract void tick(Map map);
@@ -226,19 +231,25 @@ public abstract class Entity {
 				int tileX = (int) (nextX - cushion);
 				int tileY = (int) (i);
 				
-				if(map.map[tileY][tileX] == 0) {
-					collision = true;
-					collisionX = (double) tileX + cushion + 1d;
-					break;
+				for(int id : Entity.wallTiles) {
+					if(map.map[tileY][tileX] == id) {
+						collision = true;
+						collisionX = (double) tileX + cushion + 1d;
+						break;
+					}
 				}
+				
 			}
 			
 			int tileX = (int) (nextX - cushion);
 			int tileY = (int) (lowerLeft.y);
 			
-			if(map.map[tileY][tileX] == 0) {
-				collision = true;
-				collisionX = (double) tileX + cushion + 1d;
+			for(int id : Entity.wallTiles) {
+				if(map.map[tileY][tileX] == id) {
+					collision = true;
+					collisionX = (double) tileX + cushion + 1d;
+					break;
+				}
 			}
 			
 			if(collision) {
@@ -269,19 +280,24 @@ public abstract class Entity {
 				int tileX = (int) (nextX - cushion);
 				int tileY = (int) (i);
 				
-				if(map.map[tileY][tileX] == 0) {
-					collision = true;
-					collisionX = (double) tileX - cushion;
-					break;
+				for(int id : Entity.wallTiles) {
+					if(map.map[tileY][tileX] == id) {
+						collision = true;
+						collisionX = (double) tileX - cushion;
+						break;
+					}
 				}
 			}
 			
 			int tileX = (int) (nextX - cushion);
 			int tileY = (int) (lowerRight.y);
 			
-			if(map.map[tileY][tileX] == 0) {
-				collision = true;
-				collisionX = (double) tileX - cushion;
+			for(int id : Entity.wallTiles) {
+				if(map.map[tileY][tileX] == id) {
+					collision = true;
+					collisionX = (double) tileX - cushion;
+					break;
+				}
 			}
 			
 			if(collision) {
@@ -312,19 +328,24 @@ public abstract class Entity {
 				int tileX = (int) (i);
 				int tileY = (int) (nextY - cushion);
 				
-				if(map.map[tileY][tileX] == 0) {
-					collision = true;
-					collisionY = (double) tileY - cushion;
-					break;
+				for(int id : Entity.wallTiles) {
+					if(map.map[tileY][tileX] == id) {
+						collision = true;
+						collisionY = (double) tileY - cushion;
+						break;
+					}
 				}
 			}
 			
 			int tileX = (int) (lowerRight.x);
 			int tileY = (int) (nextY - cushion);
 			
-			if(map.map[tileY][tileX] == 0) {
-				collision = true;
-				collisionY = (double) tileY - cushion;
+			for(int id : Entity.wallTiles) {
+				if(map.map[tileY][tileX] == id) {
+					collision = true;
+					collisionY = (double) tileY - cushion;
+					break;
+				}
 			}
 			
 			if(collision) {
@@ -354,19 +375,24 @@ public abstract class Entity {
 				int tileX = (int) (i);
 				int tileY = (int) (nextY - cushion);
 				
-				if(map.map[tileY][tileX] == 0) {
-					collision = true;
-					collisionY = (double) tileY + cushion + 1d;
-					break;
+				for(int id : Entity.wallTiles) {
+					if(map.map[tileY][tileX] == id) {
+						collision = true;
+						collisionY = (double) tileY + cushion + 1d;
+						break;
+					}
 				}
 			}
 			
 			int tileX = (int) (upperRight.x);
 			int tileY = (int) (nextY - cushion);
 			
-			if(map.map[tileY][tileX] == 0) {
-				collision = true;
-				collisionY = (double) tileY + cushion + 1d;
+			for(int id : Entity.wallTiles) {
+				if(map.map[tileY][tileX] == id) {
+					collision = true;
+					collisionY = (double) tileY + cushion + 1d;
+					break;
+				}
 			}
 			
 			if(collision) {

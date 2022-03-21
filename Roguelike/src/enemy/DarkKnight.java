@@ -26,7 +26,7 @@ public class DarkKnight extends Enemy{
 	public static final int IDLE_STATE = 0;
 	public static final int MOVE_STATE = 1;
 	public static final int ATTACK_STATE = 2;
-	
+		
 	//MOVE STATE
 	public Vector moveVel;
 	public double moveSpeed = 0.03;
@@ -41,7 +41,7 @@ public class DarkKnight extends Enemy{
 	//ATTACK STATE
 	public int attackFrames;
 	public int minAttackFrames = 120;
-	public int maxAttackFrames = 180;
+	public int maxAttackFrames = 150;
 	
 	public double projectileSpeed = 0.2;
 	public double projectileAngleSpread = 15;
@@ -89,7 +89,7 @@ public class DarkKnight extends Enemy{
 		else if(this.state == DarkKnight.ATTACK_STATE) {
 			this.attackFrames --;
 			
-			if(this.frameCounter % 6 == 0) {	//fire projectile
+			if(this.frameCounter % 10 == 0) {	//fire projectile
 				Vector toPlayer = new Vector(this.pos, GameManager.player.pos);
 				
 				this.facingLeft = toPlayer.x < 0;

@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import enemy.DarkKnight;
 import enemy.Enemy;
 import enemy.Grunt;
+import entity.Entity;
 
 public class GamePanel {
 	
@@ -50,6 +51,10 @@ public class GamePanel {
 					break;
 				}
 			}
+			this.map.enemyEncounters.remove(this.activeEncounter);
+			
+			//remove door tile from list of collidable tiles
+			Entity.wallTiles.remove(2);
 		}
 		else {
 			//handle the current encounter
@@ -58,9 +63,13 @@ public class GamePanel {
 					this.activeEncounter.spawnEnemies();
 				}
 				else {
+					System.out.println("encounter finished");
 					this.activeEncounter = null;
 				}
 			}
+			
+			//add door tile to list of collidable tiles
+			Entity.wallTiles.add(2);
 		}
 		
 		GameManager.player.tick(map);

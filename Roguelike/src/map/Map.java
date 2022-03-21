@@ -288,28 +288,36 @@ public class Map {
 					if(dc[i] == -1) {	//left
 						for(int r = or - connectorSize / 2; r < or + connectorSize / 2; r++) {
 							for(int c = oc; c > oc - tileSize; c--) {
-								this.map[r][c] = 1;
+								if(this.map[r][c] == 0) {
+									this.map[r][c] = 2;
+								}
 							}
 						}
 					}
 					else if(dc[i] == 1) {	//right
 						for(int r = or - connectorSize / 2; r < or + connectorSize / 2; r++) {
 							for(int c = oc; c < oc + tileSize; c++) {
-								this.map[r][c] = 1;
+								if(this.map[r][c] == 0) {
+									this.map[r][c] = 2;
+								}
 							}
 						}
 					}
 					else if(dr[i] == -1) {	//up
 						for(int c = oc - connectorSize / 2; c < oc + connectorSize / 2; c++) {
 							for(int r = or; r > or - tileSize; r--) {
-								this.map[r][c] = 1;
+								if(this.map[r][c] == 0) {
+									this.map[r][c] = 2;
+								}
 							}
 						}
 					}
 					else if(dr[i] == 1) {	//down
 						for(int c = oc - connectorSize / 2; c < oc + connectorSize / 2; c++) {
 							for(int r = or; r < or + tileSize; r++) {
-								this.map[r][c] = 1;
+								if(this.map[r][c] == 0) {
+									this.map[r][c] = 2;
+								}
 							}
 						}
 					}
@@ -338,7 +346,7 @@ public class Map {
 		
 		for(int i = 0; i < this.mapSize; i++) {
 			for(int j = 0; j < this.mapSize; j++) {
-				if(this.map[i][j] == 1 && !v[i][j]) {
+				if(this.map[i][j] != 0 && !v[i][j]) {
 					
 					int ox = j * GameManager.tileSize;
 					int oy = i * GameManager.tileSize;
@@ -348,9 +356,9 @@ public class Map {
 						canPlaceLarge = false;
 					}
 					else if(
-							this.map[i + 1][j] != 1 ||
-							this.map[i + 1][j + 1] != 1 ||
-							this.map[i][j + 1] != 1 ||
+							this.map[i + 1][j] == 0 ||
+							this.map[i + 1][j + 1] == 0 ||
+							this.map[i][j + 1] == 0 ||
 							v[i + 1][j] ||
 							v[i + 1][j + 1] ||
 							v[i][j + 1]){
@@ -386,11 +394,19 @@ public class Map {
 	//creates wall textures
 	public void processWallTextures() {
 		
-		//change map to suit needs
+		//copy over map
+		int[][] mapCopy = new int[mapSize][mapSize];
+		for(int i = 0; i < mapSize; i++) {
+			for(int j = 0; j < mapSize; j++) {
+				mapCopy[i][j] = map[i][j] == 0? 0 : 1;
+			}
+		}
+		
+		//change map copy to suit needs
 		for(int i = this.mapSize - 1; i > 0; i--) {
 			for(int j = 0; j < this.mapSize; j++) {
-				if(this.map[i - 1][j] != 0) {
-					this.map[i][j] = 1;
+				if(mapCopy[i - 1][j] != 0) {
+					mapCopy[i][j] = 1;
 				}
 			}
 		}
@@ -400,11 +416,11 @@ public class Map {
 		
 		BufferedImage[] wallTex = walls.get(0); 	//stone wall
 		
-		//first draw vertical textures
+		//first draw top wall textures
 		for(int i = 0; i < this.mapSize - 1; i++) {
 			for(int j = 0; j < this.mapSize; j++) {
 				
-				if(this.map[i][j] != 0) {
+				if(mapCopy[i][j] != 0) {
 					continue;
 				}
 				
@@ -414,7 +430,7 @@ public class Map {
 					int x = j + dx[k];
 					int y = i + dy[k];
 					
-					if(x >= 0 && y >= 0 && y < this.mapSize && x < this.mapSize && this.map[y][x] == 1) {
+					if(x >= 0 && y >= 0 && y < this.mapSize && x < this.mapSize && mapCopy[y][x] == 1) {
 						foundLower = true;
 						break;
 					}
@@ -427,7 +443,7 @@ public class Map {
 					//gImg.drawImage(wallTex[16], x, y, Map.TILE_SIZE, Map.TILE_SIZE, null);
 				}
 				
-				if(this.map[i][j] == 0 && this.map[i + 1][j] != 0) {
+				if(mapCopy[i][j] == 0 && mapCopy[i + 1][j] != 0) {
 					x = j * Map.TILE_SIZE;
 					y = (i - 0) * Map.TILE_SIZE;
 					
@@ -437,16 +453,16 @@ public class Map {
 			}
 		}
 		
-		//draw floor textures now
+		//draw the rest of the wall
 		for(int i = 0; i < this.mapSize; i++) {
 			for(int j = 0; j < this.mapSize; j++) {
-				if(this.map[i][j] == 0) {
+				if(mapCopy[i][j] == 0) {
 					
 					if((i - 1) < 0) {
 						continue;
 					}
 					
-					BufferedImage img = this.setWallTile(wallTex, i, j);
+					BufferedImage img = this.setWallTile(wallTex, i, j, mapCopy);
 					
 					int x = j * Map.TILE_SIZE;
 					int y = (i - 1) * Map.TILE_SIZE;
@@ -457,25 +473,9 @@ public class Map {
 				}
 			}
 		}
-		
-		//change back map
-		for(int i = 0; i < this.mapSize; i++) {
-			for(int j = 0; j < this.mapSize; j++) {
-				if(i + 1 == this.mapSize) {
-					if(this.map[i][j] == 1) {
-						this.map[i][j] = 0;
-					}
-				}
-				else {
-					if(this.map[i + 1][j] == 0) {
-						this.map[i][j] = 0;
-					}
-				}
-			}
-		}
 	}
 	
-	public BufferedImage setWallTile(BufferedImage[] wallTex, int row, int col) {
+	public BufferedImage setWallTile(BufferedImage[] wallTex, int row, int col, int[][] map) {
 		
 		boolean[] isLower = new boolean[8];
 		
