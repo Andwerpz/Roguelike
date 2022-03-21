@@ -29,7 +29,11 @@ public class Map {
 	public static final int TILE_SIZE = 48;	//used for drawing the map texture
 	
 	//0 : air, 1 : floor, 2 : entrance / exit
-	public int[][] map;
+	public int[][] map;	//storing tile info
+	
+	//manages enemy encounter tiles
+	public ArrayList<EnemyEncounter> enemyEncounters;
+	
 	BufferedImage mapTexture;
 	BufferedImage wallTexture;
 
@@ -198,6 +202,7 @@ public class Map {
 	public void generateMap() {
 		
 		this.map = new int[mapSize][mapSize];
+		this.enemyEncounters = new ArrayList<EnemyEncounter>();
 		
 		int tileSize = 50;
 		int innerTileSize = 30;
@@ -214,6 +219,11 @@ public class Map {
 					for(int c = oc + gap; c < oc + tileSize - gap; c++) {
 						this.map[r][c] = 1;
 					}
+				}
+				
+				if(i != 0 || j != 0) {
+					//create new enemy encounter that covers the inner tile
+					this.enemyEncounters.add(new EnemyEncounter(new Vector(or + gap, oc + gap), innerTileSize, innerTileSize));
 				}
 			}
 		}
@@ -310,6 +320,11 @@ public class Map {
 		
 		this.processTileTextures();
 		this.processWallTextures();
+		
+		//generate enemies
+		for(EnemyEncounter e : this.enemyEncounters) {
+			e.generateWave(this);
+		}
 	}
 	
 	//run after the map has been generated

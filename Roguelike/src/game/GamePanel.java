@@ -4,6 +4,7 @@ import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 
+import map.EnemyEncounter;
 import map.Map;
 import particle.Particle;
 import projectile.LongBullet;
@@ -27,6 +28,8 @@ public class GamePanel {
 	
 	public Map map;
 	
+	public EnemyEncounter activeEncounter = null;
+	
 	public GamePanel(Map map) {
 		this.map = map;
 		
@@ -38,8 +41,26 @@ public class GamePanel {
 	}
 	
 	public void tick() {
-		if(GameManager.enemies.size() <= 0) {
-			GameManager.enemies.add(new DarkKnight(new Vector(30, 30)));
+		
+		if(this.activeEncounter == null) {
+			//if no active encounter, look if the player has triggered another one
+			for(EnemyEncounter e : this.map.enemyEncounters) {
+				if(e.contains(GameManager.player)) {
+					this.activeEncounter = e;
+					break;
+				}
+			}
+		}
+		else {
+			//handle the current encounter
+			if(GameManager.enemies.size() == 0) {
+				if(this.activeEncounter.hasMoreEnemies()) {
+					this.activeEncounter.spawnEnemies();
+				}
+				else {
+					this.activeEncounter = null;
+				}
+			}
 		}
 		
 		GameManager.player.tick(map);
@@ -54,9 +75,6 @@ public class GamePanel {
 		//the point at where the camera will be centered around
 		//enable this if you want the camera to lock onto the player
 		//GameManager.cameraOffset = new Vector(new Point(0, 0), playerPos);	//vector from player location to center of screen
-		
-		//System.out.println(GameManager.cameraOffset.x + " " + GameManager.cameraOffset.y);
-		//System.out.println(GameManager.player.pos.x + " " + GameManager.player.pos.y);
 		
 		for(int index = 0; index < GameManager.items.size(); index ++) {
 			Item i = GameManager.items.get(index);
@@ -154,6 +172,11 @@ public class GamePanel {
 			p.draw(g);
 		}
 		GameManager.player.draw(g);
+		
+		
+		for(EnemyEncounter e : map.enemyEncounters) {
+			e.draw(g);
+		}
 	}
 	
 	public void mousePressed(MouseEvent arg0) {
