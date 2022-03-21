@@ -246,7 +246,7 @@ public class Player extends Entity{
 	
 	public void draw(Graphics g) {
 		
-		Point mouseReal = Entity.convertPointToReal(GameManager.mouse);
+		Vector mouseReal = Entity.convertVectorToReal(GameManager.mouse);
 		
 		//making player face towards mouse
 		if(mouseReal.x > this.pos.x) {
@@ -260,7 +260,7 @@ public class Player extends Entity{
 		//draw the currently equipped weapon
 		BufferedImage wepImg = this.equippedWeapon.sprite;
 		
-		Vector attackVector = new Vector(new Point(GameManager.player.pos), Entity.convertPointToReal(new Point(GameManager.mouse.x, GameManager.mouse.y)));
+		Vector attackVector = new Vector(new Point(GameManager.player.pos), Entity.convertVectorToReal(new Vector(GameManager.mouse.x, GameManager.mouse.y)));
 		attackVector.setMagnitude(0.5);
 		
 		//flipping image if on left side of player

@@ -60,15 +60,15 @@ public abstract class Entity {
 		return this.envHitbox.collision(this.pos, e.envHitbox, e.pos);
 	}
 	
-	public static Point convertPointToScreen(Point real) {
-		Point ans = new Point(real);
+	public static Vector convertVectorToScreen(Vector real) {
+		Vector ans = new Vector(real);
 		ans.x = (ans.x * GameManager.tileSize - GameManager.cameraOffset.x);
 		ans.y = (ans.y * GameManager.tileSize - GameManager.cameraOffset.y);
 		return ans;
 	}
 	
-	public static Point convertPointToReal(Point screen) {
-		Point ans = new Point(screen);
+	public static Vector convertVectorToReal(Vector screen) {
+		Vector ans = new Vector(screen);
 		ans.x = (ans.x + GameManager.cameraOffset.x) / GameManager.tileSize; 
 		ans.y = (ans.y + GameManager.cameraOffset.y) / GameManager.tileSize; 
 		return ans;
@@ -80,9 +80,9 @@ public abstract class Entity {
 		g2.setComposite(GraphicsTools.makeComposite(0.5));
 		g.setColor(Color.BLACK);
 	
-		Point screen = new Point(this.pos);
+		Vector screen = new Vector(this.pos);
 		screen.addVector(new Vector(-width / 2, height / 4));
-		screen = Entity.convertPointToScreen(screen);
+		screen = Entity.convertVectorToScreen(screen);
 		
 		g.fillOval((int) screen.x, (int) screen.y, (int) (this.width * (double) GameManager.tileSize), (int) (this.height / 2 * (double) GameManager.tileSize));
 		

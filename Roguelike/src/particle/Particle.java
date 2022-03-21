@@ -27,6 +27,7 @@ public abstract class Particle extends Entity{
 	public static void loadTextures() {
 		ProjectileExplosionMedium.loadTextures();
 		ProjectileExplosionParticle.loadTextures();
+		DamageNumber.loadTextures();
 	}
 
 	@Override

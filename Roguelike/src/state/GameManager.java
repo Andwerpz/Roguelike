@@ -21,7 +21,7 @@ import weapon.Weapon;
 
 public class GameManager {
 	
-	public static util.Point mouse;
+	public static Vector mouse;
 
 	public Stack<State> states;
 	
@@ -50,7 +50,7 @@ public class GameManager {
 	}
 	
 	public void tick(Point mouse2) {
-		GameManager.mouse = new util.Point(mouse2.x, mouse2.y);
+		GameManager.mouse = new Vector(mouse2.x, mouse2.y);
 		states.peek().tick(mouse2);
 	}
 	

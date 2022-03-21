@@ -62,14 +62,14 @@ public class Hitbox {
 	
 	public void draw(Graphics g, Vector pos) {
 		for(int i = 0; i < 4; i++) {
-			Point a = new Point(corners[i]); 
-			Point b = new Point(corners[(i + 1) % 4]);
+			Vector a = new Vector(corners[i]); 
+			Vector b = new Vector(corners[(i + 1) % 4]);
 			a.addVector(pos);
 			b.addVector(pos);
 			a.addVector(offset);
 			b.addVector(offset);
-			Point aScreen = Entity.convertPointToScreen(a);
-			Point bScreen = Entity.convertPointToScreen(b);
+			Vector aScreen = Entity.convertVectorToScreen(a);
+			Vector bScreen = Entity.convertVectorToScreen(b);
 			//System.out.println(a.x + " " + a.y);
 			g.setColor(Color.GREEN);
 			g.drawLine((int) aScreen.x, (int) aScreen.y, (int) bScreen.x, (int) bScreen.y);

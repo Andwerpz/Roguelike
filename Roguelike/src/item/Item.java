@@ -43,7 +43,7 @@ public abstract class Item extends entity.Entity {
 			int stringWidth = GraphicsTools.calculateTextWidth(costString, font);
 			Vector labelPos = new Vector(this.pos);
 			labelPos.y -= this.height / 2;
-			Vector labelScreenPos = (Vector) Entity.convertPointToScreen(labelPos);
+			Vector labelScreenPos = Entity.convertVectorToScreen(labelPos);
 			labelScreenPos.y -= font.getSize();
 			
 			g.setFont(font);

@@ -42,7 +42,7 @@ public abstract class Weapon extends Item{
 	
 	//generates projectiles to be put into the world
 	public ArrayList<Projectile> generateProjectiles() {
-		Vector mouseReal = new Vector(Entity.convertPointToReal(GameManager.mouse));
+		Vector mouseReal = new Vector(Entity.convertVectorToReal(GameManager.mouse));
 		Vector wepToMouse = new Vector(this.pos, mouseReal);
 		wepToMouse.normalize();
 		Vector wepEnd = new Vector(this.pos);

@@ -63,7 +63,6 @@ public class GamePanel {
 					this.activeEncounter.spawnEnemies();
 				}
 				else {
-					System.out.println("encounter finished");
 					this.activeEncounter = null;
 				}
 			}
