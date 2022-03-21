@@ -39,14 +39,12 @@ public class Player extends Entity{
 	public ArrayList<BufferedImage> curAnimation;
 	public int curAnimationFrame;
 	public int animationInterval = 10;	//num ticks between each frame
-	public boolean interruptible = false;
 	
 	public int health;
-	public int maxHealth = 100; 	//after buffs
+	public int maxHealth = 6;
 	
-	public int stamina;
-	public int maxStamina = 100;
-	public int staminaRegenDelay = 30;
+	public int shield;
+	public int maxShield = 4;
 	
 	public double critChance = 0.1;
 	public int critMultiplier = 2;
@@ -89,7 +87,7 @@ public class Player extends Entity{
 		this.immuneTimeLeft = 0;
 		
 		this.health = maxHealth;
-		this.stamina = maxStamina;
+		this.shield = maxShield;
 		
 		this.timeSinceLastAttack = 0;
 		
@@ -108,6 +106,7 @@ public class Player extends Entity{
 	public static void loadTextures() {
 		Player.idleAnimation = GraphicsTools.loadAnimation("/knight_idle.png", 19, 25);
 		Player.runAnimation = GraphicsTools.loadAnimation("/knight_run.png", 19, 25);
+		PlayerUI.loadTextures();
 	}
 	
 	//takes in hitbox and position vector and checks whether the hitbox collides with the player
@@ -135,10 +134,6 @@ public class Player extends Entity{
 	public void tick(Map map) {
 		
 		this.timeSinceLastAttack ++;
-		
-		if(this.stamina < this.maxStamina && this.timeSinceLastAttack >= this.staminaRegenDelay) {
-			this.stamina ++;
-		}
 		
 		this.health = Math.min(this.health, this.maxHealth);
 		
@@ -278,7 +273,13 @@ public class Player extends Entity{
 	
 	public boolean takeDamage(Projectile p) {
 		if(!p.playerProjectile && this.collision(p)) {
-			this.health -= p.damage;
+			if(this.shield > 0) {
+				this.shield -= p.damage;
+				this.shield = Math.max(0, this.shield);
+			}
+			else {
+				this.health -= p.damage;
+			}
 			
 			Vector projectileVel = new Vector(p.vel);
 			projectileVel.setMagnitude(0.2);

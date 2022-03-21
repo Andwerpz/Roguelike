@@ -7,6 +7,7 @@ import java.awt.event.MouseEvent;
 import map.EnemyEncounter;
 import map.Map;
 import particle.Particle;
+import player.PlayerUI;
 import projectile.LongBullet;
 import projectile.Projectile;
 import state.GameManager;
@@ -180,6 +181,9 @@ public class GamePanel {
 		}
 		GameManager.player.draw(g);
 		
+		//Player UI
+		PlayerUI.drawHealthBar(20, 20, g);
+		PlayerUI.drawShieldBar(20, 50, g);
 	}
 	
 	public void mousePressed(MouseEvent arg0) {
