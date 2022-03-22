@@ -1,10 +1,13 @@
 package player;
 
+import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
 import state.GameManager;
+import util.FontTools;
 import util.GraphicsTools;
 
 public class PlayerUI {
@@ -19,9 +22,34 @@ public class PlayerUI {
 	public static ArrayList<BufferedImage> healthBar;
 	public static ArrayList<BufferedImage> shieldBar;
 	
+	public static BufferedImage coinIcon;
+	public static Font coinDisplayFont;
+	public static int coinDisplayFontSize = 16;
+	
 	public static void loadTextures() {
-		PlayerUI.healthBar = GraphicsTools.loadAnimation("/health_bar_white.png", 16, 8);
-		PlayerUI.shieldBar = GraphicsTools.loadAnimation("/shield_bar_white.png", 16, 8);
+		PlayerUI.healthBar = GraphicsTools.loadAnimation("/health_bar.png", 16, 8);
+		PlayerUI.shieldBar = GraphicsTools.loadAnimation("/shield_bar.png", 16, 8);
+		
+		PlayerUI.coinIcon = GraphicsTools.loadAnimation("/coin_rotate.png", 8, 8).get(0);
+		PlayerUI.coinDisplayFont = FontTools.deriveSize(coinDisplayFontSize, FontTools.PressStart2P);
+	}
+	
+	public static void drawCoinDisplay(int ox, int oy, Graphics g) {
+		int coinWidth = PlayerUI.coinIcon.getWidth() * GameManager.pixelSize;
+		int coinHeight = PlayerUI.coinIcon.getHeight() * GameManager.pixelSize;
+		int gap = 10;
+		
+		int fontSize = 16;
+		
+		g.drawImage(PlayerUI.coinIcon, ox, oy, coinWidth, coinHeight, null);
+		
+		g.setColor(Color.WHITE);
+		g.setFont(PlayerUI.coinDisplayFont);
+		g.drawString(GameManager.player.gold + "", ox + coinWidth + gap, oy + coinHeight / 2 + fontSize / 2);
+		
+		//g.drawRect(ox + coinWidth + gap, oy + coinHeight / 2 + fontSize / 2, coinWidth, coinHeight);
+		//g.drawRect(ox, oy, coinWidth, coinHeight);
+		//g.drawLine(ox, oy + coinHeight / 2, ox + coinWidth + gap, oy + coinHeight / 2);
 	}
 	
 	public static void drawHealthBar(int ox, int oy, Graphics g) {
@@ -32,7 +60,7 @@ public class PlayerUI {
 		PlayerUI.drawStatBar(ox, oy, shieldBar, GameManager.player.maxShield, GameManager.player.shield, g);
 	}
 	
-	public static void drawStatBar(int ox, int oy, ArrayList<BufferedImage> statBar, int max, int cur, Graphics g) {
+	private static void drawStatBar(int ox, int oy, ArrayList<BufferedImage> statBar, int max, int cur, Graphics g) {
 		int tileWidth = statBar.get(0).getWidth() * GameManager.pixelSize;
 		int tileHeight = statBar.get(0).getHeight() * GameManager.pixelSize;
 		

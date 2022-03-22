@@ -62,7 +62,7 @@ public class Coin extends Item {
 
 	@Override
 	public void onPickup() {
-		//GameManager.gold ++;
+		GameManager.player.gold ++;
 	}
 
 }

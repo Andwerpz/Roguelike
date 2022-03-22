@@ -184,6 +184,7 @@ public class GamePanel {
 		//Player UI
 		PlayerUI.drawHealthBar(20, 20, g);
 		PlayerUI.drawShieldBar(20, 50, g);
+		PlayerUI.drawCoinDisplay(20, 80, g);
 	}
 	
 	public void mousePressed(MouseEvent arg0) {

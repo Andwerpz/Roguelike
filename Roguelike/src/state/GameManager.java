@@ -16,6 +16,7 @@ import item.Item;
 import particle.Particle;
 import player.Player;
 import projectile.Projectile;
+import util.FontTools;
 import util.Vector;
 import weapon.Weapon;
 
@@ -37,6 +38,7 @@ public class GameManager {
 	
 	public GameManager() {
 		
+		FontTools.loadFonts();
 		Entity.init();
 		Player.loadTextures();
 		Item.loadTextures();

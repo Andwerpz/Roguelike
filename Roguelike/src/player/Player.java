@@ -46,6 +46,8 @@ public class Player extends Entity{
 	public int shield;
 	public int maxShield = 4;
 	
+	public int gold = 0;
+	
 	public double critChance = 0.1;
 	public int critMultiplier = 2;
 	

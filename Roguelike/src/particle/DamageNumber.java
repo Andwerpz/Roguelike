@@ -15,6 +15,7 @@ import java.util.ArrayList;
 
 import entity.Entity;
 import map.Map;
+import util.FontTools;
 import util.GraphicsTools;
 import util.Vector;
 
@@ -42,16 +43,17 @@ public class DamageNumber extends Particle {
 	}
 	
 	public static void loadTextures() {
-		InputStream is;
-		try {
-			is = GraphicsTools.class.getResourceAsStream("/fonts/PressStart2P.ttf");
-			DamageNumber.font = Font.createFont(Font.TRUETYPE_FONT, is);
-			DamageNumber.font = DamageNumber.font.deriveFont((float) fontSize);
-		} catch (FontFormatException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		DamageNumber.font = FontTools.deriveSize(fontSize, FontTools.PressStart2P);
+//		InputStream is;
+//		try {
+//			is = GraphicsTools.class.getResourceAsStream("/fonts/PressStart2P.ttf");
+//			DamageNumber.font = Font.createFont(Font.TRUETYPE_FONT, is);
+//			DamageNumber.font = DamageNumber.font.deriveFont((float) fontSize);
+//		} catch (FontFormatException e) {
+//			e.printStackTrace();
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
 	}
 	
 	@Override
