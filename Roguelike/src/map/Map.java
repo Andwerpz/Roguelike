@@ -31,13 +31,17 @@ public class Map {
 	//0 : air, 1 : floor, 2 : entrance / exit
 	public int[][] map;	//storing tile info
 	
+	public static final int AIR = 0;
+	public static final int FLOOR = 1;
+	public static final int DOOR = 2;
+	
 	//manages enemy encounter tiles
 	public ArrayList<EnemyEncounter> enemyEncounters;
 	
 	BufferedImage mapTexture;
 	BufferedImage wallTexture;
 
-	int mapSize = 200;
+	public int mapSize = 200;
 	boolean drawGrid = false;
 	
 	static ArrayList<BufferedImage[]> walls;
@@ -264,6 +268,7 @@ public class Map {
 				if(s.size() == 0) {	//no more tiles in stack
 					break outer;
 				}
+				cur = s.peek();
 			}
 
 			while(true) {

@@ -40,6 +40,8 @@ public class GamePanel {
 		GameManager.particles = new ArrayList<>();
 		GameManager.projectiles = new ArrayList<>();
 		
+		PlayerUI.resetMinimap(map);
+		
 	}
 	
 	public void tick() {
@@ -185,6 +187,9 @@ public class GamePanel {
 		PlayerUI.drawHealthBar(20, 20, g);
 		PlayerUI.drawShieldBar(20, 50, g);
 		PlayerUI.drawCoinDisplay(20, 80, g);
+		
+		PlayerUI.updateMinimap(this.map);
+		PlayerUI.drawMinimap(g, 1600, 20);
 	}
 	
 	public void mousePressed(MouseEvent arg0) {
