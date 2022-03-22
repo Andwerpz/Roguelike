@@ -18,9 +18,10 @@ public class PlayerUI {
 	//0 1 2: empty; start, mid, end
 	//3 4 5: full; start, mid end
 	//6 7: single; empty, full
-	//8: icon
 	public static ArrayList<BufferedImage> healthBar;
+	public static BufferedImage healthBarIcon;
 	public static ArrayList<BufferedImage> shieldBar;
+	public static BufferedImage shieldBarIcon;
 	
 	public static BufferedImage coinIcon;
 	public static Font coinDisplayFont;
@@ -28,7 +29,9 @@ public class PlayerUI {
 	
 	public static void loadTextures() {
 		PlayerUI.healthBar = GraphicsTools.loadAnimation("/health_bar.png", 16, 8);
+		PlayerUI.healthBarIcon = GraphicsTools.loadImage("/health_bar_icon.png");
 		PlayerUI.shieldBar = GraphicsTools.loadAnimation("/shield_bar.png", 16, 8);
+		PlayerUI.shieldBarIcon = GraphicsTools.loadImage("/shield_bar_icon.png");
 		
 		PlayerUI.coinIcon = GraphicsTools.loadAnimation("/coin_rotate.png", 8, 8).get(0);
 		PlayerUI.coinDisplayFont = FontTools.deriveSize(coinDisplayFontSize, FontTools.PressStart2P);
@@ -53,21 +56,27 @@ public class PlayerUI {
 	}
 	
 	public static void drawHealthBar(int ox, int oy, Graphics g) {
-		PlayerUI.drawStatBar(ox, oy, healthBar, GameManager.player.maxHealth, GameManager.player.health, g);
+		PlayerUI.drawStatBar(ox, oy, healthBar, healthBarIcon, GameManager.player.maxHealth, GameManager.player.health, g);
 	}
 	
 	public static void drawShieldBar(int ox, int oy, Graphics g) {
-		PlayerUI.drawStatBar(ox, oy, shieldBar, GameManager.player.maxShield, GameManager.player.shield, g);
+		PlayerUI.drawStatBar(ox, oy, shieldBar, shieldBarIcon, GameManager.player.maxShield, GameManager.player.shield, g);
 	}
 	
-	private static void drawStatBar(int ox, int oy, ArrayList<BufferedImage> statBar, int max, int cur, Graphics g) {
+	private static void drawStatBar(int ox, int oy, ArrayList<BufferedImage> statBar, BufferedImage icon, int max, int cur, Graphics g) {
+		//drawing icon
+		int iconWidth = icon.getWidth() * GameManager.pixelSize;
+		int iconHeight = icon.getHeight() * GameManager.pixelSize;
+		
+		g.drawImage(icon, ox, oy, iconWidth, iconHeight, null);
+		
+		//drawing bar
 		int tileWidth = statBar.get(0).getWidth() * GameManager.pixelSize;
 		int tileHeight = statBar.get(0).getHeight() * GameManager.pixelSize;
-		
-		g.drawImage(statBar.get(8), ox, oy, tileWidth, tileHeight, null);	//drawing icon
+		int gap = 10;	//gap between icon and bar
 
 		for(int i = 1; i <= max; i++) {
-			int x = (i) * tileWidth + ox;
+			int x = (i - 1) * tileWidth + ox + iconWidth + gap;
 			int y = oy;
 			
 			BufferedImage nextImg = null;
