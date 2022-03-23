@@ -3,10 +3,12 @@ package particle;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import entity.Entity;
 import map.Map;
 import state.GameManager;
+import util.GraphicsTools;
 import util.Vector;
 
 public abstract class Particle extends Entity{
@@ -14,15 +16,10 @@ public abstract class Particle extends Entity{
 	public static int RED = 0;
 	public static int YELLOW = 1;
 	
-	public ArrayList<BufferedImage> sprite;
-	public int frameCounter = 0;
-	public int frameInterval = 6;
-	
 	public boolean despawnOnFinishedAnimation = true;	//despawn this particle after the animation runs all of it's frames
 	
-	public Particle(Vector pos, Vector vel, double width, double height, ArrayList<BufferedImage> sprite) {
-		super(pos, vel, width, height);
-		this.sprite = sprite;
+	public Particle(Vector pos, Vector vel, double width, double height, HashMap<Integer, ArrayList<BufferedImage>> sprites) {
+		super(pos, vel, width, height, sprites);
 		
 		this.doCollision = false;
 	}
@@ -41,7 +38,7 @@ public abstract class Particle extends Entity{
 	
 	public void incrementFrameCounter() {
 		this.frameCounter ++;
-		if(this.frameCounter / this.frameInterval >= this.sprite.size()) {
+		if(this.frameCounter / this.frameInterval >= this.sprites.get(state).size()) {
 			if(this.despawnOnFinishedAnimation) {
 				this.despawn();
 				return;
@@ -52,7 +49,7 @@ public abstract class Particle extends Entity{
 
 	@Override
 	public void draw(Graphics g) {
-		this.drawCenteredSprite(this.sprite.get(frameCounter / frameInterval), g);
+		this.drawCenteredSprite(this.sprites.get(state).get(frameCounter / frameInterval), g);
 	}
 	
 	public void despawn() {

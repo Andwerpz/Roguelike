@@ -3,6 +3,7 @@ package weapon;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 import entity.Entity;
@@ -16,8 +17,7 @@ import util.Vector;
 
 public abstract class Weapon extends Item{
 	
-	public static HashMap<String, BufferedImage> sprites;
-	public BufferedImage sprite;
+	public static HashMap<String, BufferedImage> wepSprites;
 	public String name;
 	
 	public int numBullets;
@@ -26,18 +26,22 @@ public abstract class Weapon extends Item{
 	public double velocitySpread;
 	public int bulletDamage;
 
-	public Weapon(Vector pos, BufferedImage sprite) {
-		super(pos, new Vector(0, 0), 2, 2);
-		this.sprite = sprite;
+	public Weapon(Vector pos, HashMap<Integer, ArrayList<BufferedImage>> sprites) {
+		super(pos, new Vector(0, 0), 2, 2, sprites);
 	}
 	
 	public static void loadTextures() {
-		Weapon.sprites = new HashMap<>();
+		Weapon.wepSprites = new HashMap<>();
 		ArrayList<BufferedImage> wepSprites = GraphicsTools.loadAnimation("/weapon sprites.png", 32, 32);
 
-		PumpShotgun.sprite = wepSprites.get(0);
-		AK47.sprite = wepSprites.get(1);
-		M1911.sprite = wepSprites.get(3);
+		PumpShotgun.sprites = new HashMap<Integer, ArrayList<BufferedImage>>();
+		PumpShotgun.sprites.put(Entity.DEFAULT_STATE, new ArrayList<BufferedImage>(Arrays.asList(wepSprites.get(0))));
+		
+		AK47.sprites = new HashMap<Integer, ArrayList<BufferedImage>>();
+		AK47.sprites.put(Entity.DEFAULT_STATE, new ArrayList<BufferedImage>(Arrays.asList(wepSprites.get(1))));
+		
+		M1911.sprites = new HashMap<Integer, ArrayList<BufferedImage>>();
+		M1911.sprites.put(Entity.DEFAULT_STATE, new ArrayList<BufferedImage>(Arrays.asList(wepSprites.get(3))));
 	}
 	
 	//generates projectiles to be put into the world
@@ -73,14 +77,6 @@ public abstract class Weapon extends Item{
 	public void onPickup() {
 		// TODO Auto-generated method stub
 		
-	}
-
-	@Override
-	public void tick(Map map) {}
-
-	@Override
-	public void draw(Graphics g) {
-		this.drawSprite(Weapon.sprites.get(this.name), g);
 	}
 
 }

@@ -1,15 +1,17 @@
 package weapon;
 
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 import util.Vector;
 
 public class AK47 extends Weapon{
 	
-	public static BufferedImage sprite;
+	public static HashMap<Integer, ArrayList<BufferedImage>> sprites;
 
 	public AK47(Vector pos) {
-		super(pos, AK47.sprite);
+		super(pos, AK47.sprites);
 		numBullets = 1;
 		bulletSpread = 5;
 		bulletSpeed = 0.5;

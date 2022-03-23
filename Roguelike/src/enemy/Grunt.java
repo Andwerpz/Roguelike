@@ -3,6 +3,7 @@ package enemy;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import item.Coin;
 import map.Map;
@@ -20,43 +21,42 @@ public class Grunt extends Enemy {
 	//when starting to move, picks a random amount of frames between 60 and 180 to move, and picks
 	//a direction within 45 deg of straight at the player to move.
 	
-	public static ArrayList<BufferedImage> spriteIdle;
-	public static ArrayList<BufferedImage> spriteAttack;
-	public static ArrayList<BufferedImage> spriteMove;
+	public static HashMap<Integer, ArrayList<BufferedImage>> sprites;
 	
-	public static final int IDLE_STATE = 0;
-	public static final int MOVE_STATE = 1;
-	public static final int ATTACK_STATE = 2;
+	public static final int IDLE_STATE = 1;
+	public static final int MOVE_STATE = 2;
+	public static final int ATTACK_STATE = 3;
 	
+	//MOVE STATE
 	public Vector moveVel;
 	public double moveSpeed = 0.03;
 	public int moveFrames;
 	public int maxMoveFrames = 180;
 	public int minMoveFrames = 60;
 	
+	//ATTACK STATE
 	public int numProjectiles = 4;
 	public double projectilePosSpread = 1.5;
 	public double projectileVel = 0.1;
 	
 	public Grunt(Vector pos) {
-		super(pos, 0.6, 0.6, 5);
+		super(pos, 0.6, 0.6, 5, Grunt.sprites);
 		this.state = Grunt.IDLE_STATE;
-		this.sprites.put(Grunt.IDLE_STATE, spriteIdle);
-		this.sprites.put(Grunt.ATTACK_STATE, spriteAttack);
-		this.sprites.put(Grunt.MOVE_STATE, spriteMove);
 	}
 	
 	public static void loadTextures() {
-		Grunt.spriteIdle = GraphicsTools.loadAnimation("/grunt_idle.png", 32, 32);
-		Grunt.spriteAttack = GraphicsTools.loadAnimation("/grunt_attack.png", 32, 32);
-		Grunt.spriteMove = GraphicsTools.loadAnimation("/grunt_move.png", 32, 32);
+		Grunt.sprites = new HashMap<>();
+		Grunt.sprites.put(Grunt.IDLE_STATE, GraphicsTools.loadAnimation("/grunt_idle.png", 32, 32));
+		Grunt.sprites.put(Grunt.ATTACK_STATE, GraphicsTools.loadAnimation("/grunt_attack.png", 32, 32));
+		Grunt.sprites.put(Grunt.MOVE_STATE, GraphicsTools.loadAnimation("/grunt_move.png", 32, 32));
 	}
 	
 	@Override
 	public void tick(Map map) {
 		
 		this.move(map);
-		this.frameCounter ++;
+		this.incrementFrameCounter();
+		this.checkForDeath();
 		
 		if(this.state == Grunt.IDLE_STATE) {
 			if(Math.random() <= 0.01) {
@@ -64,9 +64,6 @@ public class Grunt extends Enemy {
 			}
 			else if(Math.random() <= 0.01) {
 				this.changeToMove();
-			}
-			if(frameCounter / frameInterval >= Grunt.spriteIdle.size()) {
-				frameCounter = 0;
 			}
 		}
 		
@@ -79,9 +76,6 @@ public class Grunt extends Enemy {
 			}
 			else if(this.envCollision) {
 				this.changeToIdle();
-			}
-			if(frameCounter / frameInterval >= Grunt.spriteMove.size()) {
-				frameCounter = 0;
 			}
 		}
 		
@@ -101,7 +95,7 @@ public class Grunt extends Enemy {
 					GameManager.projectiles.add(new MagicBallSmall(projectilePos, projectileVel, 1));
 				}
 			}
-			else if(frameCounter / frameInterval >= Grunt.spriteAttack.size()) {
+			else if(this.animationLooped) {
 				this.changeToIdle();
 			}
 		}

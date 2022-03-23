@@ -15,18 +15,12 @@ import util.Vector;
 
 public abstract class Enemy extends Entity{
 	
-	public HashMap<Integer, ArrayList<BufferedImage>> sprites;
 	public int health;
 	
-	public int frameCounter = 0;	//managing frames
-	public int frameInterval = 10;	//6 fps
-	
 	public boolean facingLeft = false;
-	public int state;
 	
-	public Enemy(Vector pos, double width, double height, int health) {
-		super(pos, new Vector(0, 0), width, height);
-		this.sprites = new HashMap<Integer, ArrayList<BufferedImage>>();
+	public Enemy(Vector pos, double width, double height, int health, HashMap<Integer, ArrayList<BufferedImage>> sprites) {
+		super(pos, new Vector(0, 0), width, height, sprites);
 		this.health = health;
 	}
 	
@@ -36,11 +30,11 @@ public abstract class Enemy extends Entity{
 	}
 	
 	//do all state transitions and frame counter incrementing in here
-	//should invoke move() method
+	//should invoke move(), incrementFrameCounter(), checkForDeath()
 	public abstract void tick(Map map);	
 	
 	//make some particles, spawn coins
-	public abstract void onDeath(); 	
+	public abstract void onDeath(); 
 	
 	//gets current sprite based on current state and frameCounter
 	//flips it if facingLeft == true
@@ -50,13 +44,6 @@ public abstract class Enemy extends Entity{
 			curSprite = GraphicsTools.flipImageHorizontal(curSprite);
 		}
 		this.drawCenteredSprite(curSprite, g);
-	}
-	
-	public void incrementFrameCounter() {
-		this.frameCounter ++;
-		if(frameCounter / frameInterval >= this.sprites.get(this.state).size()) {
-			this.frameCounter = 0;
-		}
 	}
 	
 	public boolean takeDamage(Projectile p) {
@@ -72,6 +59,12 @@ public abstract class Enemy extends Entity{
 			return true;
 		}
 		return false;
+	}
+	
+	public void checkForDeath() {
+		if(this.health <= 0) {
+			this.despawn();
+		}
 	}
 	
 	public void despawn() {

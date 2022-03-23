@@ -3,6 +3,7 @@ package enemy;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import item.Coin;
 import map.Map;
@@ -20,12 +21,11 @@ public class DarkKnight extends Enemy{
 	
 	//when attacking, it will shoot many slow moving bullets in a cone at the player
 	
-	public static ArrayList<BufferedImage> spriteIdle;
-	public static ArrayList<BufferedImage> spriteMove;
+	public static HashMap<Integer, ArrayList<BufferedImage>> sprites;
 	
-	public static final int IDLE_STATE = 0;
-	public static final int MOVE_STATE = 1;
-	public static final int ATTACK_STATE = 2;
+	public static final int IDLE_STATE = 1;
+	public static final int MOVE_STATE = 2;
+	public static final int ATTACK_STATE = 3;
 		
 	//MOVE STATE
 	public Vector moveVel;
@@ -40,6 +40,7 @@ public class DarkKnight extends Enemy{
 	
 	//ATTACK STATE
 	public int attackFrames;
+	public int attackInterval = 10;
 	public int minAttackFrames = 120;
 	public int maxAttackFrames = 150;
 	
@@ -48,22 +49,24 @@ public class DarkKnight extends Enemy{
 	public double projectileSpeedSpread = 0.025;
 
 	public DarkKnight(Vector pos) {
-		super(pos, 1.3, 1.3, 20);
+		super(pos, 1.3, 1.3, 20, DarkKnight.sprites);
 		this.state = DarkKnight.IDLE_STATE;
-		this.sprites.put(DarkKnight.IDLE_STATE, spriteIdle);
-		this.sprites.put(DarkKnight.MOVE_STATE, spriteMove);
-		this.sprites.put(DarkKnight.ATTACK_STATE, spriteIdle);
+		
+		this.frameInterval = 10;
 	}
 	
 	public static void loadTextures() {
-		DarkKnight.spriteIdle = GraphicsTools.loadAnimation("/dark_knight_idle.png", 32, 32);
-		DarkKnight.spriteMove = GraphicsTools.loadAnimation("/dark_knight_move.png", 32, 32);
+		DarkKnight.sprites = new HashMap<>();
+		DarkKnight.sprites.put(DarkKnight.IDLE_STATE, GraphicsTools.loadAnimation("/dark_knight_idle.png", 32, 32));
+		DarkKnight.sprites.put(DarkKnight.MOVE_STATE, GraphicsTools.loadAnimation("/dark_knight_move.png", 32, 32));
+		DarkKnight.sprites.put(DarkKnight.ATTACK_STATE, GraphicsTools.loadAnimation("/dark_knight_idle.png", 32, 32));
 	}
 
 	@Override
 	public void tick(Map map) {
 		this.move(map);
 		this.incrementFrameCounter();
+		this.checkForDeath();
 		
 		if(this.state == DarkKnight.IDLE_STATE) {
 			if(Math.random() <= 0.008) {
@@ -89,7 +92,7 @@ public class DarkKnight extends Enemy{
 		else if(this.state == DarkKnight.ATTACK_STATE) {
 			this.attackFrames --;
 			
-			if(this.frameCounter % 10 == 0) {	//fire projectile
+			if(this.attackFrames % this.attackInterval == 0) {	//fire projectile
 				Vector toPlayer = new Vector(this.pos, GameManager.player.pos);
 				
 				this.facingLeft = toPlayer.x < 0;

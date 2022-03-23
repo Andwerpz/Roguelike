@@ -1,34 +1,20 @@
+/item/
+/particle/
+/piskel saves/
+/projectile/
+/weapon/
+/wooden_chest (1).png
+/wooden_chest.png
 /enemy/
 /entity/
 /game/
 /input/
-/item/
-/knight_icon.png
-/knight_idle.png
-/knight_run.png
-/laser_red.png
-/long_bullet.png
-/magic_ball_pointed.png
-/magic_ball_small.png
-/magic_ball_small_formation.png
 /main/
 /map/
-/minimap_border.png
-/particle/
-/piskel saves/
 /player/
-/projectile/
-/projectile_explosion_medium_red.png
-/projectile_explosion_medium_yellow.png
-/projectile_explosion_particle_red.png
-/projectile_explosion_particle_yellow.png
 /shapes/
-/shield_bar.png
-/shield_bar_icon.png
-/shield_bar_white.png
 /state/
-/stone wall 9.png
-/tile floor.png
 /util/
-/weapon sprites.png
-/weapon/
+/decoration/
+/wooden_chest_open.png
+/wooden_chest_opened.png

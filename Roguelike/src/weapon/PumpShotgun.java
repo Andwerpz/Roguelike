@@ -1,6 +1,8 @@
 package weapon;
 
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 import entity.Entity;
 import projectile.LongBullet;
@@ -9,11 +11,11 @@ import util.Vector;
 
 public class PumpShotgun extends Weapon{
 	
-	public static BufferedImage sprite;
+	public static HashMap<Integer, ArrayList<BufferedImage>> sprites;
 	public String name = "Pump Shotgun";
 
 	public PumpShotgun(Vector pos) {
-		super(pos, PumpShotgun.sprite);
+		super(pos, PumpShotgun.sprites);
 		numBullets = 5;
 		bulletSpread = 15;
 		bulletSpeed = 0.5;

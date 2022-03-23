@@ -3,7 +3,9 @@ package projectile;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.HashMap;
 
+import enemy.Enemy;
 import entity.Entity;
 import map.Map;
 import particle.Particle;
@@ -18,25 +20,14 @@ public abstract class Projectile extends Entity{
 	//you just have to pass a pointer from the static sprite animation back to the parent
 	//projectile class to draw.
 	
-	public ArrayList<BufferedImage> sprite;
 	public int damage;
-	public int frameInterval;
-	public int frameCounter = 0;
 	
 	public boolean playerProjectile = false;	//true if projectile fired by player
 	
-	public Projectile(Vector pos, Vector vel, double width, double height, int damage, ArrayList<BufferedImage> sprite, int frameInterval) {
-		super(pos, vel, width, height);
-		this.frameInterval = frameInterval;
-		this.sprite = sprite;
-		this.friction = 0;
-		this.damage = damage;
-	}
+	public boolean despawnOnEnvCollision = true;
 	
-	public Projectile(Vector pos, Vector vel, double width, double height, int damage, ArrayList<BufferedImage> sprite) {
-		super(pos, vel, width, height);
-		this.frameInterval = 1;
-		this.sprite = sprite;
+	public Projectile(Vector pos, Vector vel, double width, double height, int damage, HashMap<Integer, ArrayList<BufferedImage>> sprites) {
+		super(pos, vel, width, height, sprites);
 		this.friction = 0;
 		this.damage = damage;
 	}
@@ -48,17 +39,37 @@ public abstract class Projectile extends Entity{
 		MagicBallPointed.loadTextures();
 	}
 	
+	@Override
 	public void tick(Map map) {
 		this.move(map);
-		
-		frameCounter ++;
-		if(frameCounter / frameInterval >= sprite.size()) {
-			frameCounter = 0;
+		this.incrementFrameCounter();
+		this.checkCollision();
+		if(this.envCollision && this.despawnOnEnvCollision) {
+			this.despawn();
 		}
 	}
 	
+	@Override
 	public void draw(Graphics g) {
-		this.drawPointAtSprite(this.sprite.get(frameCounter / frameInterval), g, this.vel);
+		this.drawPointAtSprite(this.sprites.get(this.state).get(frameCounter / frameInterval), g, this.vel);
+	}
+	
+	//checks for collision against the player, or any enemy
+	public void checkCollision() {
+		if(!this.playerProjectile) {
+			if(GameManager.player.takeDamage(this)) {
+				this.despawn();
+			}
+		}
+		else if(this.playerProjectile) {
+			for(Enemy e : GameManager.enemies) {
+				if(e.takeDamage(this)) {
+					this.despawn();
+					return;
+				}
+			}
+		}
+		
 	}
 	
 	public void onDeath() {

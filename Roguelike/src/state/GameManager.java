@@ -10,6 +10,7 @@ import java.awt.event.MouseWheelEvent;
 import java.util.ArrayList;
 import java.util.Stack;
 
+import decoration.Decoration;
 import enemy.Enemy;
 import entity.Entity;
 import item.Item;
@@ -35,10 +36,12 @@ public class GameManager {
 	public static ArrayList<Enemy> enemies;
 	public static ArrayList<Particle> particles;
 	public static ArrayList<Projectile> projectiles;
+	public static ArrayList<Decoration> decorations;
 	
 	public GameManager() {
 		
 		FontTools.loadFonts();
+		Decoration.loadTextures();
 		Entity.init();
 		Player.loadTextures();
 		Item.loadTextures();

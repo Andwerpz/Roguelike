@@ -3,6 +3,7 @@ package item;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import entity.Entity;
 import entity.Hitbox;
@@ -14,55 +15,26 @@ import util.Vector;
 
 public class Coin extends Item {
 	
-	public static ArrayList<BufferedImage> animation;
-	public static int frameInterval = 8;
-	public int frameCounter;
+	public static HashMap<Integer, ArrayList<BufferedImage>> sprites;
 	
 	public Coin(Vector pos) {
-		super(new Vector(pos.x, pos.y), new Vector((Math.random() - 0.5) * 0.7, -(Math.random() - 0.5) * 0.7), 0.5, 0.5);
+		super(new Vector(pos.x, pos.y), new Vector((Math.random() - 0.5) * 0.7, -(Math.random() - 0.5) * 0.7), 0.5, 0.5, Coin.sprites);
 		
-		this.frameCounter = (int) (Math.random() * (animation.size() * frameInterval));
+		this.frameCounter = (int) (Math.random() * (sprites.get(Entity.DEFAULT_STATE).size() * frameInterval));
 		
 		this.autoPickup = true;
 		this.purchaseable = false;
 	}
-
-	@Override
-	public void tick(Map map) {
-		this.frameCounter ++;
-		if(this.frameCounter / Coin.frameInterval >= Coin.animation.size()) {
-			this.frameCounter = 0;
-		}
-		
-		if(this.outOfBounds(map)) {
-			this.pos = new Vector(Math.random() * map.map[0].length, 1);
-			this.vel = new Vector(0, 0);
-		}
-		else {
-			//if the player is close enough, start moving towards player
-			double dist = MathTools.dist(this.pos.x, this.pos.y, GameManager.player.pos.x, GameManager.player.pos.y);
-			if(dist <= 5) {
-				Vector toPlayer = new Vector(GameManager.player.pos.x - this.pos.x, GameManager.player.pos.y - this.pos.y);
-				toPlayer.setMagnitude(0.1);
-				if(toPlayer.y < 0) {
-					this.pos.y -= this.cushion * 2;
-				}
-				this.vel.addVector(toPlayer);
-			}
-			
-			this.move(map);
-		}
-		
-	}
-
-	@Override
-	public void draw(Graphics g) {
-		this.drawSprite(animation.get(frameCounter / Coin.frameInterval), g);
+	
+	public static void loadTextures() {
+		Coin.sprites = new HashMap<>();
+		sprites.put(Entity.DEFAULT_STATE, GraphicsTools.loadAnimation("/coin_rotate.png", 8, 8));
 	}
 
 	@Override
 	public void onPickup() {
 		GameManager.player.gold ++;
+		despawn();
 	}
 
 }

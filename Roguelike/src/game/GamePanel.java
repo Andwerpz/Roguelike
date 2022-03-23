@@ -19,6 +19,8 @@ import main.MainPanel;
 
 import java.util.ArrayList;
 
+import decoration.Chest;
+import decoration.Decoration;
 import enemy.DarkKnight;
 import enemy.Enemy;
 import enemy.Grunt;
@@ -41,8 +43,11 @@ public class GamePanel {
 		GameManager.enemies = new ArrayList<>();
 		GameManager.particles = new ArrayList<>();
 		GameManager.projectiles = new ArrayList<>();
+		GameManager.decorations = new ArrayList<>();
 		
 		PlayerUI.resetMinimap(map);
+		
+		GameManager.decorations.add(new Chest(new Vector(GameManager.player.pos), Chest.TYPE_WOODEN));
 		
 	}
 	
@@ -89,22 +94,14 @@ public class GamePanel {
 		//enable this if you want the camera to lock onto the player
 		//GameManager.cameraOffset = new Vector(new Point(0, 0), playerPos);	//vector from player location to center of screen
 		
-		for(int index = 0; index < GameManager.items.size(); index ++) {
+		for(int index = GameManager.items.size() - 1; index >= 0; index --) {
 			Item i = GameManager.items.get(index);
 			i.tick(map);
-			if(i.collision(GameManager.player) && i.autoPickup) {
-				i.onPickup();
-				GameManager.items.remove(i);
-				index--;
-			}
 		}
 		
 		for(int index = GameManager.enemies.size() - 1; index >= 0; index --) {
 			Enemy e = GameManager.enemies.get(index);
 			e.tick(map);
-			if(e.health <= 0) {
-				e.despawn();
-			}
 		}
 		
 		for(int index = GameManager.particles.size() - 1; index >= 0; index --) {
@@ -115,20 +112,11 @@ public class GamePanel {
 		for(int index = GameManager.projectiles.size() - 1; index >= 0; index --) {
 			Projectile p = GameManager.projectiles.get(index);
 			p.tick(map);
-			if(p.envCollision) {
-				p.despawn();
-				continue;
-			}
-			else if(GameManager.player.takeDamage(p)) {
-				p.despawn();
-				continue;
-			}
-			for(Enemy e : GameManager.enemies) {
-				if(e.takeDamage(p)) {
-					p.despawn();
-					break;
-				}
-			}
+		}
+		
+		for(int index = GameManager.decorations.size() - 1; index >= 0; index --) {
+			Decoration d = GameManager.decorations.get(index);
+			d.tick(map);
 		}
 	}
 	
@@ -152,9 +140,23 @@ public class GamePanel {
 			Enemy e = GameManager.enemies.get(index);
 			e.drawShadow(g);
 		}
+		for(int index = GameManager.decorations.size() - 1; index >= 0; index--) {
+			if(index >= GameManager.decorations.size()) {
+				continue;
+			}
+			Decoration d = GameManager.decorations.get(index);
+			d.drawShadow(g);
+		}
 		GameManager.player.drawShadow(g);
 		
 		//draw sprites
+		for(int index = GameManager.decorations.size() - 1; index >= 0; index--) {
+			if(index >= GameManager.decorations.size()) {
+				continue;
+			}
+			Decoration d = GameManager.decorations.get(index);
+			d.draw(g);
+		}
 		for(int index = GameManager.items.size() - 1; index >= 0; index--) {
 			if(index >= GameManager.items.size()) {
 				continue;

@@ -12,6 +12,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import entity.Entity;
 import map.Map;
@@ -36,7 +37,7 @@ public class DamageNumber extends Particle {
 	public int value;
 
 	public DamageNumber(Vector pos, int value) {
-		super(pos, new Vector(xVelBase + (Math.random() - 0.5) * xVelSpread, yVelBase + (Math.random() - 0.5) * yVelSpread), 0, 0, null);
+		super(pos, new Vector(xVelBase + (Math.random() - 0.5) * xVelSpread, yVelBase + (Math.random() - 0.5) * yVelSpread), 0d, 0d, null);
 		this.value = value;
 		
 		this.doCollision = false;
@@ -44,16 +45,6 @@ public class DamageNumber extends Particle {
 	
 	public static void loadTextures() {
 		DamageNumber.font = FontTools.deriveSize(fontSize, FontTools.PressStart2P);
-//		InputStream is;
-//		try {
-//			is = GraphicsTools.class.getResourceAsStream("/fonts/PressStart2P.ttf");
-//			DamageNumber.font = Font.createFont(Font.TRUETYPE_FONT, is);
-//			DamageNumber.font = DamageNumber.font.deriveFont((float) fontSize);
-//		} catch (FontFormatException e) {
-//			e.printStackTrace();
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
 	}
 	
 	@Override

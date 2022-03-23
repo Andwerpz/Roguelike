@@ -5,6 +5,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 
 import main.MainPanel;
@@ -17,6 +18,7 @@ import util.Vector;
 public abstract class Entity {
 	public static HashSet<Integer> wallTiles = new HashSet<>();	//which tiles in the map should register for env collision
 	
+	//PHYSICAL ATTRIBUTES
 	public Hitbox envHitbox;	//the environment hitbox is going to just be 1 rectangle. Multiple rectangles are too tedious, and not worth the debugging
 	
 	public double width, height;
@@ -26,35 +28,66 @@ public abstract class Entity {
 	
 	public static double cushion = 0.001;	//to facilitate smooth movement
 	
-	public double acceleration = 0.1;	//units per frame. For now, units are map grid cells
-	
-	public double maxSpeed = 0.25;	//maximum tiles per frame
-	
 	public double friction = 0.25;	//how much speed is leaked between frames.
 	
 	public boolean doCollision = true;	//if false, this entity will phase through walls
 	public boolean envCollision = false;	//is true if entity collided with environment on the last tick
 	
+	//ANIMATION
+	public HashMap<Integer, ArrayList<BufferedImage>> sprites;
+	public int frameCounter = 0;
+	public int frameInterval = 6;
+	public boolean animationLooped = false;
+	
+	public static final int DEFAULT_STATE = 0;
+	public int state = Entity.DEFAULT_STATE;
+	
 	public Entity() {
 		this.vel = new Vector(0, 0);
 		this.pos = new Vector(0, 0);
 		this.envHitbox = new Hitbox(1, 1);
+		this.sprites = null;
 	}
 	
-	public Entity(Vector pos, Vector vel, double width, double height) {
+	public Entity(Vector pos, Vector vel, double width, double height, HashMap<Integer, ArrayList<BufferedImage>> sprites) {
 		this.pos = new Vector(pos);
 		this.vel = new Vector(vel);
 		this.width = width;
 		this.height = height;
 		this.envHitbox = new Hitbox(width, height);
+		this.sprites = sprites;
 	}
 	
 	public static void init() {
 		Entity.wallTiles.add(0);
 	}
 	
-	public abstract void tick(Map map);
-	public abstract void draw(Graphics g);
+	//loads a single animation into it's own hashmap
+	public static HashMap<Integer, ArrayList<BufferedImage>> loadIntoMap(String filepath, int width, int height) {
+		HashMap<Integer, ArrayList<BufferedImage>> ans = new HashMap<>();
+		ans.put(Entity.DEFAULT_STATE, GraphicsTools.loadAnimation(filepath, width, height));
+		return ans;
+	}
+	
+	public void tick(Map map) {
+		this.move(map);
+		this.incrementFrameCounter();
+	}
+	
+	public void draw(Graphics g) {
+		this.drawCenteredSprite(this.sprites.get(this.state).get(frameCounter / frameInterval), g);
+	}
+	
+	public void incrementFrameCounter() {
+		this.frameCounter ++;
+		if(frameCounter / frameInterval >= this.sprites.get(this.state).size()) {
+			this.frameCounter = 0;
+			this.animationLooped = true;
+		}
+		else {
+			this.animationLooped = false;
+		}
+	}
 	
 	public boolean collision(Entity e) {
 		return this.envHitbox.collision(this.pos, e.envHitbox, e.pos);
