@@ -62,13 +62,14 @@ public class EnemyEncounter {
 		//first, make a new enemy at a random point inside the bounding box, then check if it collides with the environment
 		for(int i = 0; i < 10; i++) {
 			Enemy e = null;
+			
 			if(Math.random() <= 0.2) {
 				e = new DarkKnight(generateRandomVector());
 			}
 			else {
 				e = new Grunt(generateRandomVector());
 			}
-			
+			e.vel = new Vector(0.000001, 1);
 			while(true) {
 				e.move(map);
 				if(e.envCollision) {
