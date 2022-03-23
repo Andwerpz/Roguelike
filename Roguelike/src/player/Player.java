@@ -94,10 +94,12 @@ public class Player extends Entity{
 		this.timeSinceLastAttack = 0;
 		
 		this.friction = 0.9;
-		this.acceleration = 1.2;
+		this.acceleration = 1.2 * 4;
 		
 		this.curAnimation = Player.idleAnimation;
 		this.curAnimationFrame = 0;
+		
+		this.doCollision = false;
 	}
 	
 	//resets the players stats to their base levels.

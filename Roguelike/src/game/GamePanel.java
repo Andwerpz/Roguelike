@@ -35,6 +35,8 @@ public class GamePanel {
 	public GamePanel(Map map) {
 		this.map = map;
 		
+		GameManager.player.pos = new Vector(this.map.playerStartX, this.map.playerStartY);
+		
 		GameManager.items = new ArrayList<>();
 		GameManager.enemies = new ArrayList<>();
 		GameManager.particles = new ArrayList<>();
@@ -190,6 +192,10 @@ public class GamePanel {
 		
 		PlayerUI.updateMinimap(this.map);
 		PlayerUI.drawMinimap(g, 1600, 20);
+		
+		for(EnemyEncounter e : map.enemyEncounters) {
+			e.draw(g);
+		}
 	}
 	
 	public void mousePressed(MouseEvent arg0) {

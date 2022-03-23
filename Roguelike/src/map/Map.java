@@ -35,6 +35,9 @@ public class Map {
 	public static final int FLOOR = 1;
 	public static final int DOOR = 2;
 	
+	public double playerStartX;
+	public double playerStartY;
+	
 	//manages enemy encounter tiles
 	public ArrayList<EnemyEncounter> enemyEncounters;
 	
@@ -219,117 +222,287 @@ public class Map {
 				int or = i * tileSize;
 				int oc = j * tileSize;
 				int gap = (tileSize - innerTileSize) / 2;
-				for(int r = or + gap; r < or + tileSize - gap; r++) {
-					for(int c = oc + gap; c < oc + tileSize - gap; c++) {
-						this.map[r][c] = 1;
+//				for(int r = or + gap; r < or + tileSize - gap; r++) {
+//					for(int c = oc + gap; c < oc + tileSize - gap; c++) {
+//						this.map[r][c] = 1;
+//					}
+//				}
+				
+//				if(i != 0 || j != 0) {
+//					//create new enemy encounter that covers the inner tile
+//					this.enemyEncounters.add(new EnemyEncounter(new Vector(or + gap, oc + gap), innerTileSize, innerTileSize));
+//				}
+			}
+		}
+		
+		ArrayList<int[]> drc = new ArrayList<>();
+		drc.add(new int[] {-1, 0});
+		drc.add(new int[] {1, 0});
+		drc.add(new int[] {0, -1});
+		drc.add(new int[] {0, 1});
+		
+		int numFightTiles = 2;
+		
+		//generate map layouts until one works
+		while(true) {
+			//Each fight tile should have 1 or more reward tiles associated with it
+			//the key is that the reward tiles should only be accessible if the player has beaten their respective fight tile
+			
+			//initial generation should take the form of a tree like structure. The start tile is the root, 
+			//and the first fight tile should stem from it. 
+			
+			//from there, the reward tiles follow.
+			
+			//the second fight tile has to be a child of the first fight tile
+			
+			//we can call the first fight tile from the 1st layer, and the second one from the 2nd layer. 
+			//the key is that the fight tile of the nth layer can only be connected to the fight tile of the n - 1th layer, or it's
+			//own reward tiles
+			
+			//exit should be connected to the fight tile of the final layer. This makes it so that there is a relatively short path from the start
+			//to the end
+			System.out.println("------start generation");
+			
+			int[][] newMap = new int[mapSize][mapSize];
+			
+			int[][] tiles = new int[numTiles][numTiles];
+			boolean[][] isFightTile = new boolean[numTiles][numTiles];
+			
+			int sr = (int) (Math.random() * (double) numTiles);
+			int sc = (int) (Math.random() * (double) numTiles);
+			
+			tiles[sr][sc] = 1;
+			
+			boolean isValid = true;
+			
+			int[] lastFightTile = new int[2];
+			
+			for(int i = 0; i < numFightTiles; i++) {
+				System.out.println("ID: " + i);
+				int curId = i + 2;
+				//find tiles that belong to curId - 1
+				int[] prevFightTile = new int[2];
+				for(int r = 0; r < numTiles; r++) {
+					for(int c = 0; c < numTiles; c++) {
+						if(tiles[r][c] == curId - 1 && (isFightTile[r][c] || (r == sr && c == sc))) {
+							prevFightTile = new int[] {r, c};
+						}
 					}
 				}
 				
-				if(i != 0 || j != 0) {
-					//create new enemy encounter that covers the inner tile
-					this.enemyEncounters.add(new EnemyEncounter(new Vector(or + gap, oc + gap), innerTileSize, innerTileSize));
+				//pick prev fight tile to connect the next fight tile to
+				boolean foundFightTile = false;
+				int[] curFightTile = new int[2];
+				Collections.shuffle(drc);
+				for(int j = 0; j < 4; j++) {
+					int nextR = prevFightTile[0] + drc.get(j)[0];
+					int nextC = prevFightTile[1] + drc.get(j)[1];
+					if(nextR < 0 || nextR >= numTiles || nextC < 0 || nextC >= numTiles) {
+						continue;
+					}
+					if(tiles[nextR][nextC] == 0) {
+						foundFightTile = true;
+						curFightTile = new int[] {nextR, nextC};
+						tiles[nextR][nextC] = curId;
+						isFightTile[nextR][nextC] = true;
+						this.drawConnection(newMap, tileSize, connectorSize, prevFightTile[0], prevFightTile[1], drc.get(j)[0], drc.get(j)[1]);
+						break;
+					}
 				}
+				if(!foundFightTile) {
+					System.out.println("Didn't find fight tile");
+					isValid = false;
+					break;
+				}
+				
+				//generate reward tiles that are connected to the fight tile
+				int numRewardTiles = (int) (Math.random() * 2d) + 1;
+				boolean foundRewardTile = true;
+				for(int j = 0; j < numRewardTiles; j++) {
+					foundRewardTile = false;
+					Collections.shuffle(drc);
+					for(int k = 0; k < 4; k++) {
+						int nextR = curFightTile[0] + drc.get(k)[0];
+						int nextC = curFightTile[1] + drc.get(k)[1];
+						if(nextR < 0 || nextR >= numTiles || nextC < 0 || nextC >= numTiles) {
+							continue;
+						}
+						if(tiles[nextR][nextC] == 0) {
+							foundRewardTile = true;
+							tiles[nextR][nextC] = curId;
+							this.drawConnection(newMap, tileSize, connectorSize, curFightTile[0], curFightTile[1], drc.get(k)[0], drc.get(k)[1]);
+							break;
+						}
+					}
+					if(!foundRewardTile) {
+						break;
+					}
+				}
+				if(!foundRewardTile) {
+					System.out.println("Didn't find reward tile");
+					isValid = false;
+					break;
+				}
+				
+				//save last fight tile to connect the exit to
+				if(i == numFightTiles - 1) {
+					lastFightTile = curFightTile;
+				}
+			}
+			
+			boolean foundExitTile = false;
+			Collections.shuffle(drc);
+			for(int k = 0; k < 4; k++) {
+				int nextR = lastFightTile[0] + drc.get(k)[0];
+				int nextC = lastFightTile[1] + drc.get(k)[1];
+				if(nextR < 0 || nextR >= numTiles || nextC < 0 || nextC >= numTiles) {
+					continue;
+				}
+				if(tiles[nextR][nextC] == 0) {
+					foundExitTile = true;
+					tiles[nextR][nextC] = -1;
+					this.drawConnection(newMap, tileSize, connectorSize, lastFightTile[0], lastFightTile[1], drc.get(k)[0], drc.get(k)[1]);
+					break;
+				}
+			}
+			if(!foundExitTile) {
+				System.out.println("Didn't find exit tile");
+				isValid = false;
+			}
+			
+			if(isValid) {
+				System.out.println("Generation Successful");
+				//save the map layout
+				this.map = newMap;
+				
+				this.playerStartX = ((double) sc + 0.5) * tileSize;
+				this.playerStartY = ((double) sr + 0.5) * tileSize;
+				
+				for(int i = 0; i < numTiles; i++) {
+					for(int j = 0; j < numTiles; j++) {
+						int or = i * tileSize;
+						int oc = j * tileSize;
+						int gap = (tileSize - innerTileSize) / 2;
+						
+						if(tiles[i][j] != 0) {
+							//fill in inner tile
+							for(int r = or + gap; r < or + tileSize - gap; r++) {
+								for(int c = oc + gap; c < oc + tileSize - gap; c++) {
+									this.map[r][c] = 1;
+								}
+							}
+						}
+						
+						if(isFightTile[i][j]) {
+							//create new enemy encounter that covers the inner tile
+							this.enemyEncounters.add(new EnemyEncounter(new Vector(oc + gap, or + gap), innerTileSize, innerTileSize));
+						}
+						
+						System.out.print(tiles[i][j] + " ");
+					}
+					System.out.println();
+				}
+				break;
 			}
 		}
 
 		//generating connections with stack based maze structure
-		boolean[][] v = new boolean[numTiles][numTiles];
-		Stack<int[]> s = new Stack<int[]>();
-		s.add(new int[] {0, 0});
-		v[0][0] = true;
-		
-		int[] dr = new int[] {-1, 1, 0, 0};
-		int[] dc = new int[] {0, 0, -1, 1};
-		
-		outer:
-		while(s.size() != 0) {
-			int[] cur = s.peek();
-			while(true) {
-				boolean curValid = false;
-				//check for an available adjacent tile
-				for(int i = 0; i < 4; i++) {
-					int rNext = cur[0] + dr[i];
-					int cNext = cur[1] + dc[i];
-					if(rNext < 0 || rNext >= numTiles || cNext < 0 || cNext >= numTiles) {
-						continue;
-					}
-					if(!v[rNext][cNext]) {
-						curValid = true;
-						break;
-					}
-				}
-				
-				if(curValid) {	//available adjacent tile found
-					break;
-				}
-				
-				//no available adjacent tiles
-				s.pop();
-				if(s.size() == 0) {	//no more tiles in stack
-					break outer;
-				}
-				cur = s.peek();
-			}
-
-			while(true) {
-				int i = (int) (Math.random() * 4);
-				
-				int rNext = cur[0] + dr[i];
-				int cNext = cur[1] + dc[i];
-				if(rNext < 0 || rNext >= numTiles || cNext < 0 || cNext >= numTiles) {
-					continue;
-				}
-				if(!v[rNext][cNext]) {	//found available tile
-					
-					v[rNext][cNext] = true;
-					s.add(new int[] {rNext, cNext});
-					
-					int or = cur[0] * tileSize + tileSize / 2;
-					int oc = cur[1] * tileSize + tileSize / 2;
-					
-					//System.out.println(rNext + " " + cNext + " " + dr[i] + " " + dc[i] + " " + or + " " + oc);
-					
-					//fill in path to the next tile
-					if(dc[i] == -1) {	//left
-						for(int r = or - connectorSize / 2; r < or + connectorSize / 2; r++) {
-							for(int c = oc; c > oc - tileSize; c--) {
-								if(this.map[r][c] == 0) {
-									this.map[r][c] = 2;
-								}
-							}
-						}
-					}
-					else if(dc[i] == 1) {	//right
-						for(int r = or - connectorSize / 2; r < or + connectorSize / 2; r++) {
-							for(int c = oc; c < oc + tileSize; c++) {
-								if(this.map[r][c] == 0) {
-									this.map[r][c] = 2;
-								}
-							}
-						}
-					}
-					else if(dr[i] == -1) {	//up
-						for(int c = oc - connectorSize / 2; c < oc + connectorSize / 2; c++) {
-							for(int r = or; r > or - tileSize; r--) {
-								if(this.map[r][c] == 0) {
-									this.map[r][c] = 2;
-								}
-							}
-						}
-					}
-					else if(dr[i] == 1) {	//down
-						for(int c = oc - connectorSize / 2; c < oc + connectorSize / 2; c++) {
-							for(int r = or; r < or + tileSize; r++) {
-								if(this.map[r][c] == 0) {
-									this.map[r][c] = 2;
-								}
-							}
-						}
-					}
-					break;
-				}
-			}
-		}
+//		boolean[][] v = new boolean[numTiles][numTiles];
+//		Stack<int[]> s = new Stack<int[]>();
+//		s.add(new int[] {0, 0});
+//		v[0][0] = true;
+//		
+//		
+//		
+//		outer:
+//		while(s.size() != 0) {
+//			int[] cur = s.peek();
+//			while(true) {
+//				boolean curValid = false;
+//				//check for an available adjacent tile
+//				for(int i = 0; i < 4; i++) {
+//					int rNext = cur[0] + dr[i];
+//					int cNext = cur[1] + dc[i];
+//					if(rNext < 0 || rNext >= numTiles || cNext < 0 || cNext >= numTiles) {
+//						continue;
+//					}
+//					if(!v[rNext][cNext]) {
+//						curValid = true;
+//						break;
+//					}
+//				}
+//				
+//				if(curValid) {	//available adjacent tile found
+//					break;
+//				}
+//				
+//				//no available adjacent tiles
+//				s.pop();
+//				if(s.size() == 0) {	//no more tiles in stack
+//					break outer;
+//				}
+//				cur = s.peek();
+//			}
+//
+//			while(true) {
+//				int i = (int) (Math.random() * 4);
+//				
+//				int rNext = cur[0] + dr[i];
+//				int cNext = cur[1] + dc[i];
+//				if(rNext < 0 || rNext >= numTiles || cNext < 0 || cNext >= numTiles) {
+//					continue;
+//				}
+//				if(!v[rNext][cNext]) {	//found available tile
+//					
+//					v[rNext][cNext] = true;
+//					s.add(new int[] {rNext, cNext});
+//					
+//					int or = cur[0] * tileSize + tileSize / 2;
+//					int oc = cur[1] * tileSize + tileSize / 2;
+//					
+//					//System.out.println(rNext + " " + cNext + " " + dr[i] + " " + dc[i] + " " + or + " " + oc);
+//					
+//					//fill in path to the next tile
+//					if(dc[i] == -1) {	//left
+//						for(int r = or - connectorSize / 2; r < or + connectorSize / 2; r++) {
+//							for(int c = oc; c > oc - tileSize; c--) {
+//								if(this.map[r][c] == 0) {
+//									this.map[r][c] = 2;
+//								}
+//							}
+//						}
+//					}
+//					else if(dc[i] == 1) {	//right
+//						for(int r = or - connectorSize / 2; r < or + connectorSize / 2; r++) {
+//							for(int c = oc; c < oc + tileSize; c++) {
+//								if(this.map[r][c] == 0) {
+//									this.map[r][c] = 2;
+//								}
+//							}
+//						}
+//					}
+//					else if(dr[i] == -1) {	//up
+//						for(int c = oc - connectorSize / 2; c < oc + connectorSize / 2; c++) {
+//							for(int r = or; r > or - tileSize; r--) {
+//								if(this.map[r][c] == 0) {
+//									this.map[r][c] = 2;
+//								}
+//							}
+//						}
+//					}
+//					else if(dr[i] == 1) {	//down
+//						for(int c = oc - connectorSize / 2; c < oc + connectorSize / 2; c++) {
+//							for(int r = or; r < or + tileSize; r++) {
+//								if(this.map[r][c] == 0) {
+//									this.map[r][c] = 2;
+//								}
+//							}
+//						}
+//					}
+//					break;
+//				}
+//			}
+//		}
 		
 		this.processTileTextures();
 		this.processWallTextures();
@@ -337,6 +510,48 @@ public class Map {
 		//generate enemies
 		for(EnemyEncounter e : this.enemyEncounters) {
 			e.generateWave(this);
+		}
+	}
+	
+	public void drawConnection(int[][] map, int tileSize, int connectorSize, int curR, int curC, int dr, int dc) {
+		int or = curR * tileSize + tileSize / 2;
+		int oc = curC * tileSize + tileSize / 2;
+		
+		if(dc == -1) {	//left
+			for(int r = or - connectorSize / 2; r < or + connectorSize / 2; r++) {
+				for(int c = oc; c > oc - tileSize; c--) {
+					if(map[r][c] == Map.AIR) {
+						map[r][c] = Map.DOOR;
+					}
+				}
+			}
+		}
+		else if(dc == 1) {	//right
+			for(int r = or - connectorSize / 2; r < or + connectorSize / 2; r++) {
+				for(int c = oc; c < oc + tileSize; c++) {
+					if(map[r][c] == Map.AIR) {
+						map[r][c] = Map.DOOR;
+					}
+				}
+			}
+		}
+		else if(dr == -1) {	//up
+			for(int c = oc - connectorSize / 2; c < oc + connectorSize / 2; c++) {
+				for(int r = or; r > or - tileSize; r--) {
+					if(map[r][c] == Map.AIR) {
+						map[r][c] = Map.DOOR;
+					}
+				}
+			}
+		}
+		else if(dr == 1) {	//down
+			for(int c = oc - connectorSize / 2; c < oc + connectorSize / 2; c++) {
+				for(int r = or; r < or + tileSize; r++) {
+					if(map[r][c] == Map.AIR) {
+						map[r][c] = Map.DOOR;
+					}
+				}
+			}
 		}
 	}
 	
