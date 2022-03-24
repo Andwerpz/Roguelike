@@ -69,7 +69,7 @@ public class EnemyEncounter {
 			else {
 				e = new Grunt(generateRandomVector());
 			}
-			e.vel = new Vector(0.000001, 1);
+			e.vel = new Vector(0.000001, 0);
 			while(true) {
 				e.move(map);
 				if(e.envCollision) {
