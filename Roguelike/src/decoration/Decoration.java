@@ -28,6 +28,7 @@ public abstract class Decoration extends Entity {
 	
 	public static void loadTextures() {
 		Chest.loadTextures();
+		ExitDoor.loadTextures();
 	}
 	
 	public void onInteract() {

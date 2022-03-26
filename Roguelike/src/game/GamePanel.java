@@ -35,20 +35,7 @@ public class GamePanel {
 	public EnemyEncounter activeEncounter = null;
 	
 	public GamePanel(Map map) {
-		this.map = map;
-		
-		GameManager.player.pos = new Vector(this.map.playerStartX, this.map.playerStartY);
-		
-		GameManager.items = new ArrayList<>();
-		GameManager.enemies = new ArrayList<>();
-		GameManager.particles = new ArrayList<>();
-		GameManager.projectiles = new ArrayList<>();
-		GameManager.decorations = new ArrayList<>();
-		
-		PlayerUI.resetMinimap(map);
-		
-		GameManager.decorations.add(new Chest(new Vector(GameManager.player.pos), Chest.TYPE_WOODEN));
-		
+		this.map = map;	
 	}
 	
 	public void tick() {

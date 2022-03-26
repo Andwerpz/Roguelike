@@ -4,31 +4,53 @@ import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
+import java.util.ArrayList;
 
 import game.GamePanel;
 import main.MainPanel;
 import map.Map;
 import player.Player;
+import player.PlayerUI;
 import util.Vector;
 import util.Point;
 
 public class GameState extends State{
 	
+	//this is the state when the player is "in the game"
+	
 	Map map;
 	GamePanel gp;
+	
+	public int stageCounter = 1;
 	
 	public GameState(GameManager gsm) {
 		super(gsm);
 		
-		GameManager.player = new Player(new Vector(23, 23));
 		this.map = new Map();
 		this.gp = new GamePanel(this.map);
+		
+		this.nextStage();
 	}
 
 	@Override
 	public void init() {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	public void nextStage() {
+		this.map.generateMap();
+		GameManager.player.pos = new Vector(this.map.playerStartX, this.map.playerStartY);
+		
+		GameManager.items = new ArrayList<>();
+		GameManager.enemies = new ArrayList<>();
+		GameManager.particles = new ArrayList<>();
+		GameManager.projectiles = new ArrayList<>();
+		GameManager.decorations = new ArrayList<>();
+		
+		PlayerUI.resetMinimap(map);
+		
+		GameManager.decorations.addAll(this.map.mapDecorations);
 	}
 
 	@Override

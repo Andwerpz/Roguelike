@@ -1,20 +1,2 @@
-/item/
-/particle/
-/piskel saves/
-/projectile/
-/weapon/
-/wooden_chest (1).png
-/wooden_chest.png
-/enemy/
-/entity/
-/game/
-/input/
-/main/
-/map/
-/player/
-/shapes/
-/state/
-/util/
 /decoration/
-/wooden_chest_open.png
-/wooden_chest_opened.png
+/map/

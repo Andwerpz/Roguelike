@@ -16,6 +16,9 @@ import java.util.Queue;
 import java.util.Stack;
 import java.util.StringTokenizer;
 
+import decoration.Chest;
+import decoration.Decoration;
+import decoration.ExitDoor;
 import input.Button;
 import input.InputManager;
 import main.MainPanel;
@@ -27,6 +30,11 @@ public class Map {
 	//stores all relevant map info
 	
 	public static final int TILE_SIZE = 48;	//used for drawing the map texture
+	
+	public static final int TILE_TYPE_FIGHT = 1;
+	public static final int TILE_TYPE_REWARD = 2;
+	public static final int TILE_TYPE_EXIT = 3;
+	public static final int TILE_TYPE_START = 4;
 	
 	//0 : air, 1 : floor, 2 : entrance / exit
 	public int[][] map;	//storing tile info
@@ -40,6 +48,9 @@ public class Map {
 	
 	//manages enemy encounter tiles
 	public ArrayList<EnemyEncounter> enemyEncounters;
+	
+	//decorations placed on map create
+	public ArrayList<Decoration> mapDecorations;
 	
 	BufferedImage mapTexture;
 	BufferedImage wallTexture;
@@ -119,15 +130,6 @@ public class Map {
 		tileSpritesheet = GraphicsTools.loadAnimation("/tile floor.png", 16, 16);
 		
 		this.map = new int[mapSize][mapSize];
-		
-		this.generateMap();
-		
-//		for(ArrayList<Integer> a : this.map) {
-//			for(Integer i : a) {
-//				System.out.print(i + " ");
-//			}
-//			System.out.println();
-//		}
 	}
 	
 	
@@ -210,6 +212,7 @@ public class Map {
 		
 		this.map = new int[mapSize][mapSize];
 		this.enemyEncounters = new ArrayList<EnemyEncounter>();
+		this.mapDecorations = new ArrayList<Decoration>();
 		
 		int tileSize = 50;
 		int innerTileSize = 30;
@@ -247,12 +250,13 @@ public class Map {
 			int[][] newMap = new int[mapSize][mapSize];
 			
 			int[][] tiles = new int[numTiles][numTiles];
-			boolean[][] isFightTile = new boolean[numTiles][numTiles];
+			int[][] tileType = new int[numTiles][numTiles];
 			
 			int sr = (int) (Math.random() * (double) numTiles);
 			int sc = (int) (Math.random() * (double) numTiles);
 			
 			tiles[sr][sc] = 1;
+			tileType[sr][sc] = Map.TILE_TYPE_START;
 			
 			boolean isValid = true;
 			
@@ -265,7 +269,7 @@ public class Map {
 				int[] prevFightTile = new int[2];
 				for(int r = 0; r < numTiles; r++) {
 					for(int c = 0; c < numTiles; c++) {
-						if(tiles[r][c] == curId - 1 && (isFightTile[r][c] || (r == sr && c == sc))) {
+						if(tiles[r][c] == curId - 1 && (tileType[r][c] == Map.TILE_TYPE_FIGHT || (r == sr && c == sc))) {
 							prevFightTile = new int[] {r, c};
 						}
 					}
@@ -285,8 +289,7 @@ public class Map {
 						foundFightTile = true;
 						curFightTile = new int[] {nextR, nextC};
 						tiles[nextR][nextC] = curId;
-						isFightTile[nextR][nextC] = true;
-						this.drawConnection(newMap, tileSize, connectorSize, prevFightTile[0], prevFightTile[1], drc.get(j)[0], drc.get(j)[1]);
+						tileType[nextR][nextC] = Map.TILE_TYPE_FIGHT;
 						break;
 					}
 				}
@@ -311,7 +314,7 @@ public class Map {
 						if(tiles[nextR][nextC] == 0) {
 							foundRewardTile = true;
 							tiles[nextR][nextC] = curId;
-							this.drawConnection(newMap, tileSize, connectorSize, curFightTile[0], curFightTile[1], drc.get(k)[0], drc.get(k)[1]);
+							tileType[nextR][nextC] = Map.TILE_TYPE_REWARD;
 							break;
 						}
 					}
@@ -342,7 +345,7 @@ public class Map {
 				if(tiles[nextR][nextC] == 0) {
 					foundExitTile = true;
 					tiles[nextR][nextC] = -1;
-					this.drawConnection(newMap, tileSize, connectorSize, lastFightTile[0], lastFightTile[1], drc.get(k)[0], drc.get(k)[1]);
+					tileType[nextR][nextC] = Map.TILE_TYPE_EXIT;
 					break;
 				}
 			}
@@ -361,6 +364,11 @@ public class Map {
 				
 				for(int i = 0; i < numTiles; i++) {
 					for(int j = 0; j < numTiles; j++) {
+						
+						if(tileType[i][j] == 0) {	//empty tile
+							continue;
+						}
+						
 						int or = i * tileSize;
 						int oc = j * tileSize;
 						int gap = (tileSize - innerTileSize) / 2;
@@ -374,12 +382,67 @@ public class Map {
 							}
 						}
 						
-						if(isFightTile[i][j]) {
+						if(tileType[i][j] == Map.TILE_TYPE_FIGHT) {
 							//create new enemy encounter that covers the inner tile
 							this.enemyEncounters.add(new EnemyEncounter(new Vector(oc + gap, or + gap), innerTileSize, innerTileSize));
 						}
 						
-						System.out.print(tiles[i][j] + " ");
+						else if(tileType[i][j] == Map.TILE_TYPE_EXIT) {
+							//add exit door
+							this.mapDecorations.add(new ExitDoor(new Vector(oc + tileSize / 2, or + tileSize / 2)));
+						}
+						
+						else if(tileType[i][j] == Map.TILE_TYPE_REWARD) {
+							this.mapDecorations.add(new Chest(new Vector(oc + tileSize / 2, or + tileSize / 2), Chest.TYPE_WOODEN));
+						}
+						
+						else if(tileType[i][j] == Map.TILE_TYPE_START) {
+							
+						}
+						
+						//drawing connections
+						for(int k = 0; k < 4; k++) {
+							int nr = i + drc.get(k)[0];
+							int nc = j + drc.get(k)[1];
+							
+							if(nr >= numTiles || nr < 0 || nc >= numTiles || nc < 0) {
+								continue;
+							}
+							
+							int nextTileType = tileType[nr][nc];
+							
+							boolean drawConnection = false;
+							
+							if(tileType[i][j] == Map.TILE_TYPE_START && 
+									(nextTileType == Map.TILE_TYPE_FIGHT)) {
+								drawConnection = true;
+							}
+							
+							else if(tileType[i][j] == Map.TILE_TYPE_FIGHT && 
+									(nextTileType == Map.TILE_TYPE_REWARD || 
+									nextTileType == Map.TILE_TYPE_START || 
+									nextTileType == Map.TILE_TYPE_EXIT ||
+									nextTileType == Map.TILE_TYPE_FIGHT)) {
+								drawConnection = true;
+							}
+							
+							else if(tileType[i][j] == Map.TILE_TYPE_REWARD && 
+									(nextTileType == Map.TILE_TYPE_REWARD || 
+									nextTileType == Map.TILE_TYPE_FIGHT)) {
+								drawConnection = true;
+							}
+							
+							else if(tileType[i][j] == Map.TILE_TYPE_EXIT && 
+									(nextTileType == Map.TILE_TYPE_FIGHT)) {
+								drawConnection = true;
+							}
+							
+							if(drawConnection) {
+								this.drawConnection(newMap, tileSize, connectorSize, i, j, drc.get(k)[0], drc.get(k)[1]);
+							}
+						}
+						
+						System.out.print(tileType[i][j] + " ");
 					}
 					System.out.println();
 				}

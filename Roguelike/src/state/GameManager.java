@@ -25,7 +25,7 @@ public class GameManager {
 	
 	public static Vector mouse;
 
-	public Stack<State> states;
+	public static Stack<State> states;
 	
 	public static Vector cameraOffset = new Vector(0, 0);
 	public static Player player = new Player(new Vector(0, 0));
@@ -49,9 +49,20 @@ public class GameManager {
 		Enemy.loadTextures();
 		Particle.loadTextures();
 		
+		GameManager.player = new Player(new Vector(0, 0));
+		
 		states = new Stack<State>();
 		states.push(new GameState(this));
 		
+	}
+	
+	public static void nextStage() {
+		State s = GameManager.states.peek();
+		
+		if(s instanceof GameState) {
+			GameState gs = (GameState) s;
+			gs.nextStage();
+		}
 	}
 	
 	public void tick(Point mouse2) {

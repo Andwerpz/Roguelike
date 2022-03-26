@@ -172,6 +172,7 @@ public class Player extends Entity{
 		//INTERACTION
 		interactLoop:
 		if(this.interact) {
+			this.interact = false;
 			for(int i = GameManager.decorations.size() - 1; i >= 0; i--) {
 				Decoration d = GameManager.decorations.get(i);
 				if(this.collision(d)) {
