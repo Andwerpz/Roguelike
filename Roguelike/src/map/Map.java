@@ -247,8 +247,6 @@ public class Map {
 			//to the end
 			System.out.println("------start generation");
 			
-			int[][] newMap = new int[mapSize][mapSize];
-			
 			int[][] tiles = new int[numTiles][numTiles];
 			int[][] tileType = new int[numTiles][numTiles];
 			
@@ -357,7 +355,7 @@ public class Map {
 			if(isValid) {
 				System.out.println("Generation Successful");
 				//save the map layout
-				this.map = newMap;
+				int[][] newMap = new int[mapSize][mapSize];
 				
 				this.playerStartX = ((double) sc + 0.5) * tileSize;
 				this.playerStartY = ((double) sr + 0.5) * tileSize;
@@ -377,7 +375,7 @@ public class Map {
 							//fill in inner tile
 							for(int r = or + gap; r < or + tileSize - gap; r++) {
 								for(int c = oc + gap; c < oc + tileSize - gap; c++) {
-									this.map[r][c] = 1;
+									newMap[r][c] = 1;
 								}
 							}
 						}
@@ -389,7 +387,7 @@ public class Map {
 						
 						else if(tileType[i][j] == Map.TILE_TYPE_EXIT) {
 							//add exit door
-							this.mapDecorations.add(new ExitDoor(new Vector(oc + tileSize / 2, or + tileSize / 2)));
+							this.mapDecorations.add(new ExitDoor(new Vector(oc + tileSize / 2, or + tileSize / 2), ExitDoor.TYPE_INTACT));
 						}
 						
 						else if(tileType[i][j] == Map.TILE_TYPE_REWARD) {
@@ -446,6 +444,10 @@ public class Map {
 					}
 					System.out.println();
 				}
+				
+				//save map
+				this.map = newMap;
+				
 				break;
 			}
 		}

@@ -31,6 +31,12 @@ public abstract class Decoration extends Entity {
 		ExitDoor.loadTextures();
 	}
 	
+	@Override
+	public void tick(Map map) {
+		//no move() so the decoration always stays put
+		this.incrementFrameCounter();
+	}
+	
 	public void onInteract() {
 		
 	}
