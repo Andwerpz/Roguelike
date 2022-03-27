@@ -29,7 +29,7 @@ public class GameState extends State{
 		this.map = new Map();
 		this.gp = new GamePanel(this.map);
 		
-		this.nextStage();
+		this.loadLobby();
 	}
 
 	@Override
@@ -38,19 +38,14 @@ public class GameState extends State{
 		
 	}
 	
-	public void nextStage() {
-		this.map.generateMap();
-		GameManager.player.pos = new Vector(this.map.playerStartX, this.map.playerStartY);
-		
-		GameManager.items = new ArrayList<>();
-		GameManager.enemies = new ArrayList<>();
-		GameManager.particles = new ArrayList<>();
-		GameManager.projectiles = new ArrayList<>();
-		GameManager.decorations = new ArrayList<>();
-		
-		PlayerUI.resetMinimap(map);
-		
-		GameManager.decorations.addAll(this.map.mapDecorations);
+	public void loadLobby() {
+		this.map.generateLobby();
+		GameManager.resetEntities(this.map);
+	}
+	
+	public void loadNextStage() {
+		this.map.generateDungeon();
+		GameManager.resetEntities(this.map);
 	}
 
 	@Override

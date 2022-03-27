@@ -203,12 +203,30 @@ public class Map {
 		g.drawImage(mapTexture, (int) -GameManager.cameraOffset.x, (int) -GameManager.cameraOffset.y, this.mapSize * GameManager.tileSize, this.mapSize * GameManager.tileSize, null);
 	}
 	
-	int minConnectorLength = 5;
-	int maxConnectorLength = 10;
+	//generates starting lobby
+	//TODO should probably load the lobby instead of generating it each time
+	public void generateLobby() {
+		this.map = new int[mapSize][mapSize];
+		this.enemyEncounters = new ArrayList<EnemyEncounter>();
+		this.mapDecorations = new ArrayList<Decoration>();
+		
+		for(int i = 10; i < this.mapSize - 10; i++) {
+			for(int j = 10; j < this.mapSize - 10; j++) {
+				this.map[i][j] = Map.FLOOR;
+			}
+		}
+		
+		this.mapDecorations.add(new ExitDoor(new Vector(mapSize / 2, mapSize / 2), ExitDoor.TYPE_RUINED));
+		
+		this.playerStartX = mapSize / 2;
+		this.playerStartY = mapSize / 2 + 10;
+		
+		this.processTileTextures();
+		this.processWallTextures();
+	}
 	
-	ArrayList<ArrayList<Integer>> tileOccupied;
-	
-	public void generateMap() {
+	//generates a dungeon TODO based off of stage and level
+	public void generateDungeon() {
 		
 		this.map = new int[mapSize][mapSize];
 		this.enemyEncounters = new ArrayList<EnemyEncounter>();

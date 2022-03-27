@@ -29,7 +29,7 @@ public class ExitDoor extends Decoration {
 	
 	@Override
 	public void onInteract() {
-		GameManager.nextStage();
+		GameManager.loadNextStage();
 	}
 
 }

@@ -14,8 +14,10 @@ import decoration.Decoration;
 import enemy.Enemy;
 import entity.Entity;
 import item.Item;
+import map.Map;
 import particle.Particle;
 import player.Player;
+import player.PlayerUI;
 import projectile.Projectile;
 import util.FontTools;
 import util.Vector;
@@ -56,13 +58,28 @@ public class GameManager {
 		
 	}
 	
-	public static void nextStage() {
+	public static void loadNextStage() {
 		State s = GameManager.states.peek();
 		
 		if(s instanceof GameState) {
 			GameState gs = (GameState) s;
-			gs.nextStage();
+			gs.loadNextStage();
 		}
+	}
+	
+	
+	public static void resetEntities(Map map) {
+		GameManager.player.pos = new Vector(map.playerStartX, map.playerStartY);
+		
+		GameManager.items = new ArrayList<>();
+		GameManager.enemies = new ArrayList<>();
+		GameManager.particles = new ArrayList<>();
+		GameManager.projectiles = new ArrayList<>();
+		GameManager.decorations = new ArrayList<>();
+		
+		PlayerUI.resetMinimap(map);
+		
+		GameManager.decorations.addAll(map.mapDecorations);
 	}
 	
 	public void tick(Point mouse2) {
