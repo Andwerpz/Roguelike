@@ -28,6 +28,11 @@ public class ExitDoor extends Decoration {
 	}
 	
 	@Override
+	public void draw(Graphics g) {
+		this.drawSprite(super.sprites.get(this.state).get(frameCounter / frameInterval), g);
+	}
+	
+	@Override
 	public void onInteract() {
 		GameManager.loadNextStage();
 	}

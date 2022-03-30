@@ -210,8 +210,8 @@ public class Map {
 		this.enemyEncounters = new ArrayList<EnemyEncounter>();
 		this.mapDecorations = new ArrayList<Decoration>();
 		
-		for(int i = 10; i < this.mapSize - 10; i++) {
-			for(int j = 10; j < this.mapSize - 10; j++) {
+		for(int i = 90; i < this.mapSize - 90; i++) {
+			for(int j = 90; j < this.mapSize - 90; j++) {
 				this.map[i][j] = Map.FLOOR;
 			}
 		}
@@ -381,6 +381,8 @@ public class Map {
 				for(int i = 0; i < numTiles; i++) {
 					for(int j = 0; j < numTiles; j++) {
 						
+						System.out.print(tileType[i][j] + " ");
+						
 						if(tileType[i][j] == 0) {	//empty tile
 							continue;
 						}
@@ -457,8 +459,6 @@ public class Map {
 								this.drawConnection(newMap, tileSize, connectorSize, i, j, drc.get(k)[0], drc.get(k)[1]);
 							}
 						}
-						
-						System.out.print(tileType[i][j] + " ");
 					}
 					System.out.println();
 				}

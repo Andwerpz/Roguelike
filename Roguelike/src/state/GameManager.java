@@ -67,6 +67,15 @@ public class GameManager {
 		}
 	}
 	
+	public static void loadLobby() {
+		State s = GameManager.states.peek();
+		
+		if(s instanceof GameState) {
+			GameState gs = (GameState) s;
+			gs.loadLobby();
+		}
+	}
+	
 	
 	public static void resetEntities(Map map) {
 		GameManager.player.pos = new Vector(map.playerStartX, map.playerStartY);

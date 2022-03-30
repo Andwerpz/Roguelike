@@ -105,6 +105,12 @@ public class GamePanel {
 			Decoration d = GameManager.decorations.get(index);
 			d.tick(map);
 		}
+		
+		//check if player died
+		if(GameManager.player.health <= 0) {
+			GameManager.loadLobby();
+			GameManager.player.reset();
+		}
 	}
 	
 	public void draw(Graphics g) {
@@ -136,28 +142,20 @@ public class GamePanel {
 		}
 		GameManager.player.drawShadow(g);
 		
+		ArrayList<Entity> drawnEntities = new ArrayList<Entity>();
+		drawnEntities.addAll(GameManager.decorations);
+		drawnEntities.addAll(GameManager.items);
+		drawnEntities.addAll(GameManager.enemies);
+		drawnEntities.add(GameManager.player);
+		
+		drawnEntities.sort((a, b) -> Double.compare(a.pos.y + a.height / 2, b.pos.y + b.height / 2));
+		
 		//draw sprites
-		for(int index = GameManager.decorations.size() - 1; index >= 0; index--) {
-			if(index >= GameManager.decorations.size()) {
-				continue;
-			}
-			Decoration d = GameManager.decorations.get(index);
-			d.draw(g);
-		}
-		for(int index = GameManager.items.size() - 1; index >= 0; index--) {
-			if(index >= GameManager.items.size()) {
-				continue;
-			}
-			Item i = GameManager.items.get(index);
-			i.draw(g);
-		}
-		for(int index = GameManager.enemies.size() - 1; index >= 0; index --) {
-			if(index >= GameManager.enemies.size()) {
-				continue;
-			}
-			Enemy e = GameManager.enemies.get(index);
+		for(int index = 0; index < drawnEntities.size(); index++) {
+			Entity e = drawnEntities.get(index);
 			e.draw(g);
 		}
+		
 		for(int index = GameManager.particles.size() - 1; index >= 0; index --) {
 			if(index >= GameManager.particles.size()) {
 				continue;
@@ -172,7 +170,6 @@ public class GamePanel {
 			Projectile p = GameManager.projectiles.get(index);
 			p.draw(g);
 		}
-		GameManager.player.draw(g);
 		
 		//Player UI
 		PlayerUI.drawHealthBar(20, 20, g);

@@ -1,3 +1,10 @@
-/map/
+/player/
+/projectile/
+/shapes/
 /state/
+/util/
+/weapon/
+/game/
+/map/
 /decoration/
+/entity/

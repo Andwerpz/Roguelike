@@ -44,7 +44,7 @@ public class Player extends Entity{
 	public int maxHealth = 6;
 	
 	public int shield;
-	public int maxShield = 4;
+	public int maxShield = 10;
 	
 	public int gold = 0;
 	
@@ -53,7 +53,10 @@ public class Player extends Entity{
 	
 	public boolean immune = false;
 	public int immuneTimeLeft;
-	public int immuneTime = 30;
+	public int immuneTime = 60;
+	
+	public int shieldRegenInterval = 90;
+	public int shieldRegenCounter = 0;
 	
 	public double moveAcceleration = 1.2;
 	public boolean fastMove = false;
@@ -109,6 +112,16 @@ public class Player extends Entity{
 		
 	}
 	
+	//trigger on death
+	public void reset() {
+		this.health = this.maxHealth;
+		this.shield = this.maxShield;
+		
+		this.gold = 0;
+		
+		this.immune = false;
+	}
+	
 	public static void loadTextures() {
 		Player.sprites = new HashMap<>();
 		ArrayList<BufferedImage> idleAnimation = GraphicsTools.loadAnimation("/knight_idle.png", 19, 25);
@@ -122,7 +135,6 @@ public class Player extends Entity{
 	
 	@Override
 	public void tick(Map map) {
-		
 		if(this.noClip) {
 			this.doCollision = false;
 		}
@@ -140,6 +152,16 @@ public class Player extends Entity{
 			this.immuneTimeLeft --;
 			if(this.immuneTimeLeft < 0) {
 				this.immune = false;
+			}
+		}
+		
+		if(this.shield != this.maxShield && !this.immune) {
+			this.shieldRegenCounter --;
+			if(this.shieldRegenCounter <= 0) {
+				this.shield ++;
+				if(this.shield < this.maxShield) {
+					this.shieldRegenCounter = this.shieldRegenInterval;
+				}
 			}
 		}
 		
@@ -239,12 +261,22 @@ public class Player extends Entity{
 	
 	public boolean takeDamage(Projectile p) {
 		if(!p.playerProjectile && this.collision(p)) {
-			if(this.shield > 0) {
-				this.shield -= p.damage;
-				this.shield = Math.max(0, this.shield);
-			}
-			else {
-				this.health -= p.damage;
+			
+			if(!this.immune) {
+				if(this.shield > 0) {
+					this.shield -= p.damage;
+					this.shield = Math.max(0, this.shield);
+				}
+				else {
+					this.health -= p.damage;
+				}
+				
+				//reset shield regen timer
+				this.shieldRegenCounter = this.shieldRegenInterval;
+				
+				//give player immune frames
+				this.immune = true;
+				this.immuneTimeLeft = this.immuneTime;
 			}
 			
 			Vector projectileVel = new Vector(p.vel);

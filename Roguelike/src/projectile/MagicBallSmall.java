@@ -42,6 +42,7 @@ public class MagicBallSmall extends Projectile {
 	public void tick(Map map) {
 		this.move(map);
 		this.incrementFrameCounter();
+		this.checkCollision();
 		
 		if(this.state == FORMATION_STATE) {
 			if(this.animationLooped) {
