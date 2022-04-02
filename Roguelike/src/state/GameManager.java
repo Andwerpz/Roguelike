@@ -51,6 +51,12 @@ public class GameManager {
 		Enemy.loadTextures();
 		Particle.loadTextures();
 		
+		GameManager.items = new ArrayList<>();
+		GameManager.enemies = new ArrayList<>();
+		GameManager.particles = new ArrayList<>();
+		GameManager.projectiles = new ArrayList<>();
+		GameManager.decorations = new ArrayList<>();
+		
 		GameManager.player = new Player(new Vector(0, 0));
 		
 		states = new Stack<State>();

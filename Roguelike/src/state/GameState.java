@@ -13,13 +13,20 @@ import player.Player;
 import player.PlayerUI;
 import util.Vector;
 import util.Point;
+import util.TransitionManager;
 
 public class GameState extends State{
 	
 	//this is the state when the player is "in the game"
 	
 	Map map;
+	
 	GamePanel gp;
+	
+	TransitionManager tm;
+	public String nextScene;
+	public boolean initialLoad = false;
+	public boolean loaded = false;
 	
 	public int stageCounter = 1;
 	
@@ -28,8 +35,11 @@ public class GameState extends State{
 		
 		this.map = new Map();
 		this.gp = new GamePanel(this.map);
+		this.tm = new TransitionManager();
 		
 		this.loadLobby();
+		this.tm.changeToLoadingState();
+		this.nextScene = "Lobby";
 	}
 
 	@Override
@@ -39,23 +49,49 @@ public class GameState extends State{
 	}
 	
 	public void loadLobby() {
-		this.map.generateLobby();
-		GameManager.resetEntities(this.map);
+		this.tm.startTransition();
+		this.nextScene = "Lobby";
+		this.loaded = false;
 	}
 	
 	public void loadNextStage() {
-		this.map.generateDungeon();
-		GameManager.resetEntities(this.map);
+		this.tm.startTransition();
+		this.nextScene = "Dungeon";
+		this.loaded = false;
 	}
 
 	@Override
 	public void tick(java.awt.Point mouse2) {
-		this.gp.tick();
+		if(this.initialLoad) {
+			this.gp.tick();
+		}
+		
+		this.tm.tick();
+		
+		if(this.tm.state == TransitionManager.LOADING_STATE && !this.loaded) {
+			if(this.nextScene.equals("Dungeon")) {
+				this.map.generateDungeon();
+			}
+			else if(this.nextScene.equals("Lobby")) {
+				this.map.generateLobby();
+			}
+			
+			GameManager.resetEntities(this.map);
+			
+			this.loaded = true;
+			this.initialLoad = true;
+			
+			this.tm.endTransition();
+		}
 	}
 
 	@Override
 	public void draw(Graphics g) {
-		this.gp.draw(g);
+		if(this.initialLoad) {
+			this.gp.draw(g);
+		}
+		
+		this.tm.draw(g);
 	}
 
 	@Override

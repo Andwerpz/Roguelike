@@ -124,6 +124,8 @@ public class Map {
 	
 	public Map() {
 		
+		this.enemyEncounters = new ArrayList<>();
+		
 		TilesetManager.loadTiles();
 		
 		loadWallTextures();
@@ -219,7 +221,7 @@ public class Map {
 		this.mapDecorations.add(new ExitDoor(new Vector(mapSize / 2, mapSize / 2), ExitDoor.TYPE_RUINED));
 		
 		this.playerStartX = mapSize / 2;
-		this.playerStartY = mapSize / 2 + 10;
+		this.playerStartY = mapSize / 2 + 8;
 		
 		this.processTileTextures();
 		this.processWallTextures();
